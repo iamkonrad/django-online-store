@@ -5,7 +5,7 @@ from store.models import Product
 class Cart():
     def __init__(self,request):                                                              #accessing the attributes
 
-        self.session = request.session                                                       #creating new session for new user, returning one utilize existing session
+        self.session = request.session                                                       #creating new session for new user, returning one utilizes existing session
         cart=self.session.get('session_key')                                                 #for existing user
 
         # new key for new user

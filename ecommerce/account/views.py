@@ -124,7 +124,7 @@ def my_login(request):
     return render(request,'account/my-login.html',context=context)
 
 
-def user_logout(request):
+def user_logout(request):                                                                                               #clearing the session
 
     auth.logout(request)
 
