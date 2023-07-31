@@ -18,6 +18,8 @@ from django.contrib.auth import authenticate,login,logout
 
 from django.contrib.auth.decorators import login_required
 
+from django.contrib import messages
+
 def register(request):                                                                                                  #registration process starts HERE, once done passed
                                                                                                                         #to email-verification.html
     form = CreateUserForm()
@@ -128,6 +130,8 @@ def user_logout(request):                                                       
 
     auth.logout(request)
 
+    messages.success(request, "Logout success!")                                                                        #once a user logs out he will be redirected to store and
+                                                                                                                        #shown a message
     return redirect("store")
 
 @login_required(login_url='my-login')
@@ -151,6 +155,8 @@ def profile_management(request):
 
             user_form.save()
 
+            messages.info(request, "Account updated")
+
             return redirect('dashboard')
 
 
@@ -168,6 +174,11 @@ def delete_account(request):
     if request.method =='POST':
 
         user.delete()
+
+
+        messages.error(request, "Account deleted.")                                                                     #changed to error so the for loop in base.html behaves properly
+
+
 
         return redirect('store')                                                                                        #users redirected to store after account deletion
 
