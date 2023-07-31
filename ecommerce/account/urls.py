@@ -1,6 +1,9 @@
 from django.urls import path
 
-from . import views #in the same directory
+from . import views                                                                               #in the same directory
+
+from django.contrib.auth import views as auth_views                                               #making use of django's built-in views
+
 
 urlpatterns = [
 
@@ -27,5 +30,17 @@ urlpatterns = [
         path('profile-management', views.profile_management, name='profile-management'),
 
         path('delete-account', views.delete_account, name='delete-account'),
+
+
+
+#PASSWORD MANAGEMENT URLS/VIEWS
+
+        path('reset_password',auth_views.PasswordResetView.as_view(),name='reset_password'),                            #Submitting email form
+
+        path('reset_password_sent',auth_views.PasswordResetDoneView.as_view(),name='password_reset_done'),              #An email reset password has been sent
+
+        path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(),name='password_reset_confirm'),    #Password reset link                                                                                                       #Password reset link
+
+        path('reset_password_complete',auth_views.PaswordResetCompleteView.as_view(),name='password_reset_complete'),   #Pasword has been successfully reset
 
 ]
