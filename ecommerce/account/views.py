@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
-from django.template import ContextPopException
 
 from . forms import CreateUserForm, LoginForm, UpdateUserForm
+
+from payment.forms import ShippingForm                                                                                  #pushing changes with a form
+from payment.models import ShippingAddress                                                                              #queries on a model
 
 from django.contrib.auth.models import User
 
@@ -14,7 +16,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode      
 
 
 from django.contrib.auth.models import auth
-from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth import authenticate
 
 from django.contrib.auth.decorators import login_required
 
@@ -184,8 +186,36 @@ def delete_account(request):
 
     return render(request,'account/delete-account.html')
 
+#SHIPPING
+@login_required(login_url='my-login')                                                                                   #only logged in users can access this
+def manage_shipping(request):
 
+    try:
 
+        shipping =  ShippingAddress.objects.get(user=request.user.id)                                                   # checkng whether a logged in user has already entered
+                                                                                                                        # shipping information, it's OPTIONAL to enter it
 
+    except ShippingAddress.DoesNotExist:
 
+        shipping = None                                                                                                 #user account no shipping info
 
+    form = ShippingForm(instance=shipping)                                                                              #if there is info then the form gets prefilled, if there is none it does not
+
+    if request.method =='POST':
+
+        form = ShippingForm(request.POST, instance=shipping)                                                            #whenever someone fills a shipping form, posting the data if no shipping form
+                                                                                                                        #associated with that user then create it, if it existed, then update it
+
+        if form.is_valid():
+
+            shipping_user =form.save(commit=False)                                                                      #assigning the user FK on the object
+
+            shipping_user.user = request.user                                                                           #adding the fk
+
+            shipping_user.save()
+
+            return redirect('dashboard')                                                                                #if user updates the shipping information
+
+    context = {'form':form}
+
+    return render (request, 'account/manage-shipping.html', context=context)
