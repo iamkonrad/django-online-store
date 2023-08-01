@@ -26,9 +26,8 @@ class ShippingAddress(models.Model):
     state = models.CharField(max_length=255, null=True, blank=True)
 
 
-    # Foreign key, one_to many relationship                                                                             #a user can have multiple shipping addresses, each shipping
+                       # Foreign key, one_to many relationship                                                          #a user can have multiple shipping addresses, each shipping
                                                                                                                         #address belongs to one user ONLY
-
 
     user = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)                                      #cascade= when user deletes his account shipping details get
                                                                                                                         #removed;guest checkouts allowed
@@ -45,22 +44,48 @@ class ShippingAddress(models.Model):
         return 'Shipping Address -' +str(self.id)
 
 
-    class Order(models.Model):
+class Order(models.Model):
 
-        full_name = models.CharField(max_length=300)
+    full_name = models.CharField(max_length=300)
 
-        email = models.EmailField(max_length=255)
+    email = models.EmailField(max_length=255)
 
-        shipping_address = models.TextField(max_length=10000)
+    shipping_address = models.TextField(max_length=10000)
 
-        amount_paid = models.DecimalField(max_digits=8,decimal_places=2)
+    amount_paid = models.DecimalField(max_digits=8,decimal_places=2)                                                    #total amount
 
-        date_ordered = models.DateTimeField(auto_now_add=True)                                                          #will automatically add the order date
+    date_ordered = models.DateTimeField(auto_now_add=True)                                                              #will automatically add the order date
 
-        #Foreign key
+                            #Foreign key
 
-        user = models.ForeignKey(User, on_delete=models.CASCADE, null=True,  blank=True)                                #represents the  user who placed the order, one to many, one user
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True,  blank=True)                                    #represents the  user who placed the order, one to many, one user
                                                                                                                         #many orders; user an intermediary field
-        def __str__(self):
 
-            return 'Order - #' + str(self.id)                                                                           #orders will get displayed as Order -# 1 instead of Order (1)
+
+    def __str__(self):                                                                                                  #orders will get displayed as Order -# 1 instead of Order (1)
+
+        return 'Order - #' + str(self.id)
+
+
+
+class OrderItem(models.Model):
+
+                              #Foreign keys
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)                                               #order items linked to order class, multiple items linked to one order
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)                                           #multiple order item objects can be associated with one product
+
+
+    quantity = models.PositiveBigIntegerField(default=1)
+
+    price = models.DecimalField(max_digits=8,decimal_places=2)                                                          #price per quantity of items, not the total amount
+
+
+                               #Foreign key
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):                                                                                                  #orders displayed as Order -# 1 instead of Order (1)
+
+        return 'Order Item - #' + str(self.id)
