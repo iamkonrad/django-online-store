@@ -30,6 +30,8 @@ urlpatterns = [
 
     path('account/', include('account.urls')),
 
+    path('payment/', include('payment.urls')),
+
 ]
 
 #path for images, appending them
