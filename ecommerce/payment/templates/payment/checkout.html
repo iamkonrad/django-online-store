@@ -135,12 +135,58 @@
 
     <!-- Ajax integration -->
 
-    
+       <script>
 
-    <script>
+       //Complete checkout
+
+$(document).on('submit', 'function(e){
+
+    e.preventDefault();
+
+    $.ajax({
+
+        type:'POST',
+        url:'{% url "complete-order" %}',
+        data: {
 
 
-    
+            name: $('#name').val(),
+            email: $('#email').val(),
+
+            address1: $('#address1').val(),
+            address2: $('#address2').val(),
+            city: $('#city').val(),
+
+
+            state: $('#state').val(),
+            postal_code: $('#postal_code').val(),
+
+
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            action:'post'
+
+
+        },
+
+        success: function(json) {
+
+                //console.log(json)
+
+        },
+
+        error: function (xhr,errmsg,err){
+
+        }
+
+        });
+
+
+
+
+
+
+    })
+
 
 
    </script>
