@@ -139,7 +139,7 @@
 
        //Complete checkout
 
-$(document).on('submit', 'function(e){
+$(document).on('submit', function(e){
 
     e.preventDefault();
 
@@ -172,9 +172,14 @@ $(document).on('submit', 'function(e){
 
                 //console.log(json)
 
+                window.location.replace("{%  url 'payment-success' %}");
+
         },
 
         error: function (xhr,errmsg,err){
+
+                window.location.replace("{%  url 'payment-failed' %}");
+
 
         }
 

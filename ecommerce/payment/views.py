@@ -94,7 +94,14 @@ def complete_order(request):                                                    
 
         return response
 
-def payment_success(request):
+def payment_success(request):                                                                                           #Clearing shopping cart once transaction has been completed
+
+
+    for key in list(request.session.keys()):
+
+        if key =='session_key':                                                                                         #key located in cart/cart/ class cart, cart
+
+            del request.session[key]
 
     return render(request,'payment/payment-success.html')
 
