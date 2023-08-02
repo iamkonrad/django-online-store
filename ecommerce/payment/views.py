@@ -4,6 +4,8 @@ from .models import ShippingAddress, Order, OrderItem
 
 from cart.cart import Cart
 
+from django.http import JsonResponse
+
 def checkout(request):
 
     if request.user.is_authenticated:                                                                                   #users with accounts, (check if can prefill the form)
@@ -26,7 +28,7 @@ def checkout(request):
 
 
 
-def complete_order(request):
+def complete_order(request):                                                                                            #handles the request coming from Ajax from checkout.html
 
     if request.POST.get('action') =='post':                                                                             #making sure that request from AJAX from checkout.html is a post
 
@@ -47,11 +49,51 @@ def complete_order(request):
         total_cost = cart.get_total()                                                                                   #using get total function from cart.py, assigning it to a value,
                                                                                                                         #amount_paid from models
 
-        ''' Order variations:
-        1) Users with and without shipping info
-        2) Guest Users
-        
-        '''
+
+                           # 1) Users with and without shipping info
+
+        if request.user.is_authenticated:
+
+            order = Order.objects.create(full_name=name,email=email,shipping_address=shipping_address,                  #full_name and amount_paid from model,
+            amount_paid=total_cost, user=request.user)                                                                  #adding a user foreign key
+
+            order_id = order.pk                                                                                         #primary key of order, order_id in the order_item
+
+        # order_id used as a foreign key to connect the OrderItem model to the Order model
+
+            for item in cart:
+
+                OrderItem.objects.create(order_id=order_id, product=item['product'],quantity=item['qty'],               #as order cart items are being created, they are
+                                                                                                                        #connected to a order model; 3 products = 3 order items
+                price=item['price'], user=request.user)
+
+
+                                #2) Guest Users
+
+        else:
+
+            order = Order.objects.create(full_name=name, email=email,shipping_address=shipping_address,                 # full_name and amount_paid from Order model
+            amount_paid = total_cost)
+
+            order_id = order.pk                                                                                         # primary key of order, order_id in the order_item
+
+
+
+        #order_id used as a foreign key to connect the OrderItem model to the Order model
+
+            for item in cart:
+                OrderItem.objects.create(order_id=order_id, product=item['product'], quantity=item['qty'],              # as order cart items are being created, they are
+                                                                                                                        # connected to a order model; 3 products = 3 order items
+                price=item['price'])
+
+
+
+        order_success = True
+
+        response = JsonResponse({'success':order_success})                                                              #sent back to Ajax in checkout.html
+
+        return response
+
 def payment_success(request):
 
     return render(request,'payment/payment-success.html')
