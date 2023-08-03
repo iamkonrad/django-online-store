@@ -50,9 +50,9 @@
 
         <hr>
 
-        <p> Track all of your orders here... </p>
+        <p> Track all of your orders here. </p>
 
-        <a class="btn btn-primary navbar-btn text-white" type="button"  href=""> My orders </a>
+        <a class="btn btn-primary navbar-btn text-white" type="button"  href="{% url 'track-orders' %}"> My orders </a>
 
     </div>
 
@@ -65,7 +65,7 @@
 
         <hr>
 
-        <p> Update or delete your account </p>
+        <p> Update or delete your account. </p>
 
 
         <a class="btn btn-primary navbar-btn text-white" type="button"  href="{% url 'profile-management' %}"> Profile management </a>
@@ -77,11 +77,13 @@
 
         <div class="container bg-white shadow-md p-5 form-layout">
 
-        <h4>  <i class="fa fa-anchor" aria-hidden="true"></i> &nbsp; Manage shipping </h4>
+        <h4><i class="fa fa-truck fa-flip-horizontal" aria-hidden="true"></i> &nbsp;Manage shipping</h4>
+
+
 
         <hr>
 
-        <p> Enter in a shipping address </p>
+        <p> Enter in a shipping address. </p>
 
 
         <a class="btn btn-primary navbar-btn text-white" type="button"  href="{% url 'manage-shipping' %}"> Manage shipping </a>

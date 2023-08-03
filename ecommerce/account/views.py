@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from . forms import CreateUserForm, LoginForm, UpdateUserForm
 
 from payment.forms import ShippingForm                                                                                  #pushing changes with a form
-from payment.models import ShippingAddress                                                                              #queries on a model
+from payment.models import ShippingAddress, OrderItem  # queries on a model
 
 from django.contrib.auth.models import User
 
@@ -219,3 +219,20 @@ def manage_shipping(request):
     context = {'form':form}
 
     return render (request, 'account/manage-shipping.html', context=context)
+
+
+@login_required(login_url='my-login')
+def track_orders(request):
+
+    try:
+
+        orders=OrderItem.objects.filter(user=request.user)                                                              #fetching the orders associated with a user, user FK
+
+        context = {'orders': orders}
+
+        return render(request, 'account/track-orders.html', context=context)
+
+    except:                                                                                                             #in case user has no orders
+
+        return render(request, 'account/track-orders.html')
+                                                                                                                        #context making the data available for the html template
