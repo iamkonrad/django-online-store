@@ -4,7 +4,7 @@ Django online store
 Some important points about this webapp:
 
 1.USER AUTHORIZATION: 
-For the security reasons each person using this webapp needs to configure his/her own smtp settings, for now, only an EMAIL_BACKEND using django console handles that, but there are commented out lines in settigns.py (lines 160-166) waiting to be filled with proper data in case there is a need to set profile update/password change/notifications/authorization handled by an smtp server (by default an smtp server is set as google); 
+For security reasons each person using this webapp needs to configure his/her own smtp settings, for now, only an EMAIL_BACKEND using django console handles that, but there are commented out lines in settigns.py (lines 160-166) waiting to be filled with proper data in case there is a need to set profile update/password change/notifications/authorization handled by an smtp server (by default an smtp server is set as google); 
 
 
 2.IN ORDER TO TEST LOG-IN functionality without turning on smtp server: 1. register an account by clcking register account on the main page of the app and follow with the standard procedure, afterwards log in to admin using superuser, set newly created test account status to ACTIVE(by default it's set to INACTIVE since it needs to be email authorised), from now on you can log in with a newly created test account;
