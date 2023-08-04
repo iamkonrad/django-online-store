@@ -7,7 +7,7 @@ from .models import Category, Product
 def category():
     return Category.objects.create(name='Test Category', slug='test-category')
 
-@pytest.fixture                                                                                                         #test product, dependant on the category "fixture"
+@pytest.fixture                                                                                                         #test product, dependent on the category "fixture"
 def product(category):
     return Product.objects.create(title='Test Product', slug='test-product', category=category,price=19.99, image ='images/')
 

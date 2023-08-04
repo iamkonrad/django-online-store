@@ -111,18 +111,15 @@
 
 
 <form class="d-flex" action="{% url 'search' %}" method="GET">
-
-    <button class="btn btn-primary d-flex align-items-center" type="submit">
-
-        Search <i class="fa fa-search ms-2"  aria-hidden="true"></i>
-
-    </button>
-
-    <input class="form-control me-2" type="search" name="search_query" placeholder="Search for products" style="width: 700px;" aria-label="Search">
-
+    <div style="position: relative;">
+        <button class="btn btn-primary d-flex align-items-center" type="submit" style="position: absolute; left: 5px; top: 50%; transform: translateY(-50%); border: none; background-color: transparent; color: #007bff; padding: 8px 12px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; border-radius: 4px;">
+            <i class="fa fa-search" style="font-size: 18px;" aria-hidden="true"></i>
+        </button>
+        <input class="form-control me-2" type="search" name="search_query" style="width: 700px; padding-left: 40px;" aria-label="Search">
+    </div>
 </form>
 
-|
+
 
         <div class="collapse navbar-collapse text-center" id="navbarNavDropdown">
             
