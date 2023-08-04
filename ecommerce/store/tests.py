@@ -41,3 +41,47 @@ def test_product_info(product):
     assert 'product' in response.context
 
 
+
+# @pytest.mark.django_db
+# def test_product_creation():
+#     product = Product.objects.create(title='New Product', slug='new-product', price=9.99, image='images/')
+#     assert Product.objects.filter(slug='new-product').exists()
+#
+
+# @pytest.mark.django_db
+# def test_category_creation():
+#     category = Category.objects.create(name='New Category', slug='new-category')
+#     assert Category.objects.filter(slug='new-category').exists()
+#
+
+
+
+# @pytest.mark.django_db
+# def test_product_deletion(product):
+#     product.delete()
+#     assert not Product.objects.filter(slug=product.slug).exists()
+#
+
+# @pytest.mark.django_db
+# def test_category_deletion(category):
+#     category.delete()
+#     assert not Category.objects.filter(slug=category.slug).exists()
+#
+# @pytest.mark.django_db
+# def test_add_product_to_category(category, product):
+#     category.products.add(product)
+#     assert product in category.products.all()
+#
+# @pytest.mark.django_db
+# def test_remove_product_from_category(category, product):
+#     category.products.add(product)
+#     category.products.remove(product)
+#     assert product not in category.products.all()
+#
+# @pytest.mark.django_db
+# def test_product_price_change(product):
+#     new_price = 29.99
+#     product.price = new_price
+#     product.save()
+#     updated_product = Product.objects.get(slug=product.slug)
+#     assert updated_product.price == new_price

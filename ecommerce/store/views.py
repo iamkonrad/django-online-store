@@ -35,4 +35,11 @@ def product_info(request,product_slug):
     return render(request,'store/product-info.html',context)
 
 
+def search(request):
+    query = request.GET.get('search_query')
+    if query:
+        results = Product.objects.filter(title__icontains=query)
+    else:
+        results = Product.objects.none()
+    return render(request, 'store/search_results.html', {'results': results, 'query': query})
 
