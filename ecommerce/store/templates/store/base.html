@@ -70,54 +70,40 @@
 
     </button>
 
+<nav class="navbar navbar-expand-lg navbar-light bg-primary justify-content-center" style="padding-left: 150px;padding-top: 80px;">
+    <div class="container navbar-light">
+        <div class="search-form">
+            <form class="d-flex mb-3" action="{% url 'search' %}" method="GET">
+                <div style="position: relative;">
+                    <button class="btn btn-primary d-flex align-items-center" type="submit" style="position: absolute; left: 1px; top: 50%; transform: translateY(-50%); border: none; background-color: #007bff; color: #fff; padding: 8px 12px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; border-radius: 4px;">
+                        <i class="fa fa-search" style="font-size: 18px;" aria-hidden="true"></i>
+                    </button>
+                    <input class="form-control me-2" type="search" name="search_query" style="width: 750px; padding-left: 50px; background-color: #fff; color: #000;" aria-label="Search">
+                </div>
 
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
-
-                <li class="nav-item dropdown">
-
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false" style="font-size:20px;">
-                        Product
-                        categories
-
-                    </a>
-
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-
-                        <li>
-
-                            <a class="dropdown-item" href=""> All </a>
-
+            </form>
+            <div class="categories-list">
+                <div class="w-100 d-flex justify-content-center bg-primary">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="" style="font-size:20px;">Browse by category:</a>
                         </li>
-
-                        {%  for category in all_categories %}
-                            <a class="dropdown-item" href="{{ category.get_absolute_url }}">{{ category.name|capfirst }}</a>
-
-
-                        {%  endfor %}
-
-
-
+                        {% for category in all_categories %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ category.get_absolute_url }}" style="font-size:20px;">{{ category.name|capfirst }}</a>
+                            </li>
+                            {% if not forloop.last %}
+                                <li class="nav-item">
+                                    <span class="nav-link text-white" style="font-size: 20px;"> | </span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
                     </ul>
-
-                </li>
-
-            </ul>
-
+                </div>
+            </div>
         </div>
-
-
-
-<form class="d-flex" action="{% url 'search' %}" method="GET">
-    <div style="position: relative;">
-        <button class="btn btn-primary d-flex align-items-center" type="submit" style="position: absolute; left: 5px; top: 50%; transform: translateY(-50%); border: none; background-color: transparent; color: #007bff; padding: 8px 12px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; border-radius: 4px;">
-            <i class="fa fa-search" style="font-size: 18px;" aria-hidden="true"></i>
-        </button>
-        <input class="form-control me-2" type="search" name="search_query" style="width: 700px; padding-left: 40px;" aria-label="Search">
     </div>
-</form>
+</nav>
 
 
 
@@ -318,7 +304,7 @@
 
             <ul class="list-unstyled mb-0">
               <li>
-                <a href="#!" class="text-white">Actual job offers</a>
+                <a href="#!" class="text-white">Actual openings</a>
               </li>
 
             </ul>
@@ -346,7 +332,7 @@
                 <a href="#!" class="text-white">Customer service email:</a>
               </li>
                 <li>
-                <a href="#!" class="text-white">wewillhelpyou"wearables.com</a>
+                <a href="#!" class="text-white">wewillhelpyou@wearables.com</a>
               </li>
             </ul>
           </div>
