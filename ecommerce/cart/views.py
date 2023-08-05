@@ -69,7 +69,7 @@ def cart_update(request):
 
         cart.update(product=product_id,qty=product_quantity)
 
-        cart_quantity = cart.__len__()                                                                            #updating the session
+        cart_quantity = cart.__len__()                                                                                  #updating the session
 
         cart_total=cart.get_total()
 

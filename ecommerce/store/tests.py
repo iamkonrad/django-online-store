@@ -19,12 +19,21 @@ def test_store():
     assert 'all_products' in response.context
 
 @pytest.mark.django_db
+def test_empty_store_view(client):
+    Product.objects.all().delete()
+    url = reverse('store')
+    response = client.get(url)
+    assert response.status_code == 200
+    assert 'all_products' in response.context
+    assert len(response.context['all_products']) == 0
+
+@pytest.mark.django_db                                                                                                  #do zmiany bo testuje to samo, co 1. a chodzi żeby było to inne
 def test_categories():
     client = Client()
     response = client.get('/')
     assert 'all_categories' in response.context
 
-@pytest.mark.django_db
+@pytest.mark.django_db                                                                                                   #powinno sprawdzać konkretną kategorię a nie wszystkie
 def test_list_category(category):
     client = Client()
     url = reverse('list-category', kwargs={'category_slug': category.slug})
@@ -40,6 +49,26 @@ def test_product_info(product):
     assert response.status_code == 200
     assert 'product' in response.context
 
+
+@pytest.mark.django_db
+def test_search_view(product):
+    client = Client()
+    search_query = product.title.split()[1]
+    response = client.get('/search/', {'search_query': search_query})
+    assert response.status_code == 200
+    assert 'results' in response.context
+    assert 'query' in response.context
+    assert product in response.context['results']
+
+@pytest.mark.django_db
+def test_search_view_no_results():
+    client = Client()
+    search_query = 'nonexistent_query'
+    response = client.get('/search/', {'search_query': search_query})
+    assert response.status_code == 200
+    assert 'results' in response.context
+    assert 'query' in response.context
+    assert not response.context['results']
 
 
 # @pytest.mark.django_db
