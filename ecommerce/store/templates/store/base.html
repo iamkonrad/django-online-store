@@ -17,7 +17,7 @@
 
 
         <!-- CSS -->
-        
+
         <link rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.min.css">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -34,9 +34,9 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
 
-	
 
-	 <!-- Bootstrap Max CDN --> 
+
+	 <!-- Bootstrap Max CDN -->
 
 	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
@@ -44,16 +44,16 @@
 
     </head>
 
-    
 
 
-    <nav class="navbar navbar-expand-lg bg-primary justify-content-center">
+
+<nav class="navbar navbar-expand-lg bg-primary justify-content-center" style="max-height: 250px; margin: auto;">
 
 
-        <a class="navbar-brand main-heading text-white" href="{% url 'store' %}"> 
-                
-        &nbsp; &nbsp; WearAbles
-        
+        <a class="navbar-brand main-heading text-white" href="{% url 'store' %}">
+
+            <img src="{% static 'media/images/Wearables1.png' %}" alt="Your Custom Logo">
+
         </a>
 
 
@@ -72,18 +72,18 @@
 
 
         <div class="collapse navbar-collapse" id="navbarCollapse">
-                
+
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
 
                 <li class="nav-item dropdown">
-                    
+
                     <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    
-                        Categories
-                    
+                    data-bs-toggle="dropdown" aria-expanded="false" style="font-size:20px;">
+                        Product
+                        categories
+
                     </a>
-                    
+
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 
                         <li>
@@ -97,9 +97,9 @@
 
 
                         {%  endfor %}
-                    
-        
-                    
+
+
+
                     </ul>
 
                 </li>
@@ -122,15 +122,15 @@
 
 
         <div class="collapse navbar-collapse text-center" id="navbarNavDropdown">
-            
+
             <ul class="navbar-nav ms-auto">
 
             {% if user.is_authenticated%}
 
 
                 <li class="nav-item">
-            
-                    <a class="btn btn-alert navbar-btn text-white" type="button"  href="{%  url 'dashboard' %}"><i class="fa fa-home" aria-hidden="true"></i> Dashboard </a>
+
+                    <a class="btn btn-alert navbar-btn text-white" type="button" style="font-size:20px;"  href="{%  url 'dashboard' %}"><i class="fa fa-home" aria-hidden="true"></i> Dashboard </a>
 
                 </li>
 
@@ -138,7 +138,7 @@
 
                  <li class="nav-item">
 
-                    <a class="btn btn-alert navbar-btn text-white" type="button"  href="{%  url 'register' %}"> Register </a>
+                    <a class="btn btn-alert navbar-btn text-white" type="button" style="font-size:20px;"  href="{%  url 'register' %}"> Register </a>
 
                 </li>
 
@@ -148,7 +148,7 @@
 
                  <li class="nav-item">
 
-                     <a class="btn btn-alert navbar-btn text-white" type="button"  href="{% url 'user-logout'%}"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout </a>
+                     <a class="btn btn-alert navbar-btn text-white" type="button" style="font-size:20px;" href="{% url 'user-logout'%}"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout </a>
 
                 </li>
 
@@ -156,7 +156,7 @@
 
                 <li class="nav-item">
 
-                    <a class="btn btn-alert navbar-btn text-white" type="button"  href="{% url 'my-login'%}"> Login </a>
+                    <a class="btn btn-alert navbar-btn text-white" type="button"  style="font-size:20px;" href="{% url 'my-login'%}"> Login </a>
 
                 </li>
 
@@ -169,7 +169,7 @@
                 <li class="nav-item">
 
                     <a type="button" role="button" href="{% url 'cart-summary' %}" class="btn btn-outline-secondary">
-                    
+
 
 
                         <i class="fa fa-shopping-cart" aria-hidden="true"> </i>
@@ -206,11 +206,11 @@
                 </li>
 
                 &nbsp; &nbsp; &nbsp;
-        
+
 
             </ul>
 
-        
+
         </div>
 
 
@@ -241,7 +241,7 @@
     <body>
 
 
-        {% block content %} 
+        {% block content %}
 
 
 
@@ -249,7 +249,7 @@
 
 
 
-            
+
         {% endblock %}
     
         
@@ -270,13 +270,10 @@
         <div class="row">
           <!--Grid column-->
           <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
-            <h5 class="text-uppercase">FOOTER CONTENT</h5>
+            <h5 class="text-uppercase"></h5>
 
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Molestiae modi cum ipsam ad, illo possimus laborum ut
-              reiciendis obcaecati. Ducimus, quas. Corrupti, pariatur eaque?
-              Reiciendis assumenda iusto sapiente inventore animi?
+              Welcome to the home of the most sublime fashion designed with the highest gusto. With you in mind.
             </p>
           </div>
           <!--Grid column-->
@@ -287,16 +284,10 @@
 
             <ul class="list-unstyled mb-0">
               <li>
-                <a href="#!" class="text-white">Link 1</a>
+                <a href="#!" class="text-white">About</a>
               </li>
               <li>
-                <a href="#!" class="text-white">Link 2</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 3</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 4</a>
+                <a href="#!" class="text-white">Suggestions</a>
               </li>
             </ul>
           </div>
@@ -308,17 +299,15 @@
 
             <ul class="list-unstyled mb-0">
               <li>
-                <a href="#!" class="text-white">Link 1</a>
+                <a href="#!" class="text-white">Privacy</a>
               </li>
               <li>
-                <a href="#!" class="text-white">Link 2</a>
+                <a href="#!" class="text-white">Terms and conditions</a>
               </li>
               <li>
-                <a href="#!" class="text-white">Link 3</a>
+                <a href="#!" class="text-white">Returns</a>
               </li>
-              <li>
-                <a href="#!" class="text-white">Link 4</a>
-              </li>
+
             </ul>
           </div>
           <!--Grid column-->
@@ -329,37 +318,35 @@
 
             <ul class="list-unstyled mb-0">
               <li>
-                <a href="#!" class="text-white">Link 1</a>
+                <a href="#!" class="text-white">Actual job offers</a>
               </li>
-              <li>
-                <a href="#!" class="text-white">Link 2</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 3</a>
-              </li>
-              <li>
-                <a href="#!" class="text-white">Link 4</a>
-              </li>
+
             </ul>
           </div>
           <!--Grid column-->
 
           <!--Grid column-->
           <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-            <h5 class="text-uppercase">Contact us</h5>
+            <h5 class="text-uppercase">Customer service</h5>
 
             <ul class="list-unstyled mb-0">
               <li>
-                <a href="#!" class="text-white">Link 1</a>
+                <a href="#!" class="text-white">International call-line</a>
               </li>
               <li>
-                <a href="#!" class="text-white">Link 2</a>
+                <a href="#!" class="text-white">(21)001-002-003</a>
               </li>
               <li>
-                <a href="#!" class="text-white">Link 3</a>
+                <a href="#!" class="text-white">Domestic call-line (US only)</a>
               </li>
               <li>
-                <a href="#!" class="text-white">Link 4</a>
+                <a href="#!" class="text-white">(1)-001-007-3245</a>
+              </li>
+              <li>
+                <a href="#!" class="text-white">Customer service email:</a>
+              </li>
+                <li>
+                <a href="#!" class="text-white">wewillhelpyou"wearables.com</a>
               </li>
             </ul>
           </div>
@@ -380,7 +367,6 @@
           </button>
         </p>
       </section>
-      <!-- Section: CTA -->
 
       <hr class="mb-4" />
 
@@ -391,50 +377,38 @@
            class="btn btn-outline-light btn-floating m-1"
            href="#!"
            role="button"
-           ><i class="fab fa-facebook-f"></i
+           ><i class="fa fa-facebook-f"></i
           ></a>
 
-        <!-- Twitter -->
+            <!-- Instagram -->
         <a
            class="btn btn-outline-light btn-floating m-1"
            href="#!"
            role="button"
-           ><i class="fab fa-twitter"></i
+           ><i class="fa fa-instagram"></i
           ></a>
 
-        <!-- Google -->
+         <!-- LinkedIn -->
         <a
            class="btn btn-outline-light btn-floating m-1"
            href="#!"
            role="button"
-           ><i class="fab fa-google"></i
+           ><i class="fa fa-linkedin"></i
           ></a>
 
-        <!-- Instagram -->
+
+             <!-- Twitter -->
         <a
            class="btn btn-outline-light btn-floating m-1"
            href="#!"
            role="button"
-           ><i class="fab fa-instagram"></i
+           ><i class="fa fa-twitter"></i
           ></a>
 
-        <!-- Linkedin -->
-        <a
-           class="btn btn-outline-light btn-floating m-1"
-           href="#!"
-           role="button"
-           ><i class="fab fa-linkedin-in"></i
-          ></a>
 
-        <!-- Github -->
-        <a
-           class="btn btn-outline-light btn-floating m-1"
-           href="#!"
-           role="button"
-           ><i class="fab fa-github"></i
-          ></a>
       </section>
       <!-- Section: Social media -->
+
     </div>
     <!-- Grid container -->
 
