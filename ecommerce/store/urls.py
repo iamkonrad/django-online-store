@@ -16,4 +16,7 @@ urlpatterns = [
     #Searchbar functionality
     path('search/', views.search, name='search'),
 
+    path('tag/<slug:tag_slug>/', views.list_tag, name='list-tag'),
+
 ]
+

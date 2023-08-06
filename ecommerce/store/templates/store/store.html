@@ -1,65 +1,52 @@
-
 {% extends "store/base.html" %}
-
 {% load static %}
 
-
 {% block content %}
+<!-- Your existing content -->
 
+<div class="album py-1 pg-3 bg-light">
+    <div class="container">
 
-    <!-- Introduction section -->
+        <div class="pb-3 h5"> All products </div>
 
-<section class="py-4 text-center container">
-    <div class="row py-lg-4">
-        <div class="col-lg-6 col-md-8 mx-auto">
-            <h4 class="fw-bold text-primary">Wearables  | Formal Wear</h4>
-            <p class="lead text-muted">Browse our ever-expanding collection.</p>
-            <a href="{% url 'register' %}" class="btn btn-primary btn-lg my-2">
-                <i class="fa fa-user-plus me-2" aria-hidden="true"></i> Create an Account
-            </a>
+        <hr>
+
+        <br>
+
+        <!-- Display Tags -->
+        <div class="row">
+                <h5>Tags:</h5>
+                <ul class="list-inline">
+                    {% for tag in all_tags %}
+                        <li class="list-inline-item"><a class="text-black text-decoration-none" href="{% url 'list-tag' tag.tag_slug %}">{{ tag.tag_name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
+            {% for product in all_products %}
+            <div class="col">
+                <div class="card shadow-sm">
+                    <img class="img-fluid" alt="Responsive image" src="{{ product.image.url }}">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <a class="text-info text-decoration-none" href="{{ product.get_absolute_url }}">{{ product.title|capfirst }}</a>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5>$ {{ product.price }}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
-</section>
-
-    <div class="album py-1 pg-3 bg-light">
-
-        <div class="container">
-
-          <div class="pb-3 h5"> All products </div>
-
-
-          <hr>
-
-          <br>
-
-
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
-
-                {% for product in all_products%}  <!-- looping over by key -->
-
-            <div class="col">
-              <div class="card shadow-sm">
-                <img class="img-fluid" alt="Responsive image" src="{{ product.image.url }}">
-                <div class="card-body">
-                  <p class="card-text">
-                    <a class="text-info text-decoration-none" href="{{product.get_absolute_url}}">{{ product.title|capfirst }}</a>
-                  </p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <h5> $ {{ product.price }}</h5>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-{%  endfor %}
-
-          </div>
-        </div>
-        <br> <br>
-
-      </div>
+    <br> <br>
+</div>
 {% endblock %}
-
 
 
 

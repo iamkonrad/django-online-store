@@ -1,30 +1,30 @@
 from django.shortcuts import render
-from . models import Category, Product
+from . models import Category, Product, Tag
 from django.shortcuts import get_object_or_404
 
 
-def store (request):
-    all_products = Product.objects.all()                                                          #getting hold of all the products
+def store(request):
+    all_products = Product.objects.all()                                                                                #getting hold of all the products
+    all_tags = Tag.objects.all()                                                                                        #retrieving objects from the database
+                                                                                                                        #generally responsible for displaying the main store page
+    context = {
+        'all_products': all_products,
+        'all_tags': all_tags,
+    }
 
-    context = {'all_products':all_products}
-
-    return render(request,'store/store.html', context)
-
-
-
-
+    return render(request, 'store/store.html', context)
 
 
 def categories(request):
 
-    all_categories=Category.objects.all()                                                       #select all categories(shoes and shirts)
+    all_categories=Category.objects.all()                                                                               #select all categories(shoes and shirts)
 
     return {'all_categories': all_categories}
 
-def list_category(request,category_slug=None ):                                                  #(a view for individual category)
+def list_category(request,category_slug=None ):                                                                         #(a view for individual category)
 
     category = get_object_or_404(Category,slug=category_slug)
-    products = Product.objects.filter(category=category)                                        #defining the products and filtering them by category
+    products = Product.objects.filter(category=category)                                                            #defining the products and filtering them by category
 
     return render(request, 'store/list-category.html', {'category':category,'products':products})
 
@@ -45,3 +45,18 @@ def search(request):
         results = Product.objects.none()
     return render(request, 'store/search_results.html', {'results': results, 'query': query})
 
+
+def list_tag(request, tag_slug=None):
+    tag = get_object_or_404(Tag, tag_slug=tag_slug)
+    products = tag.product_tags.all()
+    all_categories = Category.objects.all()
+    all_tags = Tag.objects.all()
+
+    context = {
+        'tag': tag,
+        'products': products,
+        'all_categories': all_categories,
+        'all_tags': all_tags,
+    }
+
+    return render(request, 'store/list-tag.html', context)
