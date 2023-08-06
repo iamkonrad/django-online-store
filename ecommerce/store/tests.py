@@ -7,8 +7,9 @@ from django.urls import reverse
 from .models import Category, Product, Tag
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db #OK
 def test_empty_store_view(client):
+    client=Client()
     Product.objects.all().delete()
     url = reverse('store')
     response = client.get(url)
@@ -35,13 +36,12 @@ def test_random_category_deletion():
 def test_existing_category_on_homepage():
     client = Client()
     category_slug='shirts'
-    category = Category.objects.all(slug=category_slug)
+    category = Category.objects.get(slug=category_slug)
     url = reverse('list-category')
     response = client.get(url)
 
     assert response.status_code == 200
     assert 'category' in response.context
-
 
 
 @pytest.mark.django_db
@@ -109,20 +109,9 @@ def test_search_view_existing_product():
     assert not response.context['results']
 
 
-#add tag
-
-#remove tag
-
-#check tag
 @pytest.mark.django_db  # OK
 def setUp(self):
     self.tag = Tag.objects.create(tag_name='Best Sellers', tag_slug='best-sellers')
-
-@pytest.mark.django_db
-def test_tag_creation():
-    tag = Tag.objects.create(tag_name='Best Sellers', tag_slug='best-sellers')
-    assert isinstance(tag, Tag)
-    assert str(tag) == 'Best Sellers'
 
 @pytest.mark.django_db
 def test_tag_unique_slug():
@@ -135,7 +124,14 @@ def test_tag_absolute_url():
     tag = Tag.objects.create(tag_name='Best Sellers', tag_slug='best-sellers')
     url = reverse('tag-detail', args=[tag.tag_slug])
     assert tag.get_absolute_url() == url
-@pytest.mark.django_db
+
+@pytest.mark.django_db #OK
+def test_tag_creation():
+    tag = Tag.objects.create(tag_name='Best Sellers', tag_slug='best-sellers')
+    assert isinstance(tag, Tag)
+    assert str(tag) == 'Best Sellers'
+
+@pytest.mark.django_db #OK
 def test_tag_deletion():
     tag = Tag.objects.create(tag_name='Summer bestseller', tag_slug='summer-bestseller')
     tag_count_before = Tag.objects.count()
@@ -152,12 +148,6 @@ def test_tag_deletion():
 #     assert Category.objects.filter(slug='new-category').exists()
 #
 
-
-
-# @pytest.mark.django_db
-# def test_product_deletion(product):
-#     product.delete()
-#     assert not Product.objects.filter(slug=product.slug).exists()
 #
 
 # @pytest.mark.django_db

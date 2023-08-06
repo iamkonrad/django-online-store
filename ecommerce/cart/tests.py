@@ -9,17 +9,17 @@ from .cart import Cart
 
 class TestCartViews(TestCase):
 
-    @pytest.fixture
-    def setup(self):
-        self.product = Product.objects.create(name="Havana Shirt", price=125)
+@pytest.fixture
+def setup(self):
+    self.product = Product.objects.create(name="Havana Shirt", price=125)
+    self.product2 = Product.objects.create(name="Winter Pants", price=200)
 
-
-    @pytest.mark.django_db
-    def test_cart_summary(self):
-        browser = Client()
-        response = self.client.get(reverse('cart_summary'))
-        assert response.status_code == 200
-        assert 'cart' in response.context
+@pytest.mark.django_db
+def test_cart_summary(self,setup):
+    browser = Client()
+    response = self.client.get(reverse('cart_summary'))
+    assert response.status_code == 200
+    assert 'cart' in response.context
 
     @pytest.mark.django_db
     def test_cart_add(self, setup):
