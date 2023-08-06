@@ -66,7 +66,7 @@ class Cart():
 
         all_product_ids = self.cart.keys()
 
-        products = Product.objects.filter(id__in=all_product_ids)                            #checking if products in cart matche the database
+        products = Product.objects.filter(id__in=all_product_ids)                            #checking if products in cart match the database
 
         import copy
 

@@ -7,39 +7,35 @@ from store.models import Product
 from .cart import Cart
 
 
-class TestCartViews(TestCase):
 
-@pytest.fixture
-def setup(self):
-    self.product = Product.objects.create(name="Havana Shirt", price=125)
-    self.product2 = Product.objects.create(name="Winter Pants", price=200)
-
-@pytest.mark.django_db
-def test_cart_summary(self,setup):
-    browser = Client()
-    response = self.client.get(reverse('cart_summary'))
+@pytest.mark.django_db #OK
+def test_cart_summary():
+    client = Client()
+    response = client.get(reverse('cart-summary'))
     assert response.status_code == 200
     assert 'cart' in response.context
 
-    @pytest.mark.django_db
-    def test_cart_add(self, setup):
-        browser = Client()
-        url = reverse('cart_add')
-        response = self.client.post(url, {'action': 'post', 'product_id': self.product.id, 'product_quantity': 3})
-        assert response.status_code == 200
-        assert response.json()['qty'] == 3  # Assuming the cart was initially empty
+@pytest.mark.django_db #OK
+def test_cart_add():
+    client = Client()
+    product = Product.objects.create(title="Havana Shirt", price=125)
+    url = reverse('cart-add')
+    response = client.post(url, {'action': 'post', 'product_id': product.id, 'product_quantity': 3})
+    assert response.status_code == 200
+    assert response.json()['qty'] == 3
+
+@pytest.mark.django_db #OK
+def test_cart_delete():
+    client = Client()
+    product = Product.objects.create(title="Havana Shirt", price=125)
+    url = reverse('cart-delete')
+    response = client.post(url, {'action': 'post', 'product_id': product.id})
+    assert response.status_code == 200
+    assert response.json()['qty'] == 0                                                                                  #Creating one object and deleting it afterwards
 
     @pytest.mark.django_db
-    def test_cart_delete(self, setup):
-        browser = Client()
-        url = reverse('cart_delete')
-        response = self.client.post(url, {'action': 'post', 'product_id': self.product.id})
-        assert response.status_code == 200
-        assert response.json()['qty'] == 0  # Assuming the cart had one item and it was deleted
-
-    @pytest.mark.django_db
-    def test_cart_delete(self, setup):
-        browser = Client()
+    def test_cart_delete():
+        client = Client()
         # Add both products to the cart
         url_add = reverse('cart_add')
         response_add_1 = self.client.post(url_add,
@@ -69,10 +65,10 @@ def test_cart_summary(self,setup):
         remaining_product = next(item for item in cart if item['product'] == self.product2)
         assert remaining_product['quantity'] == 1
 
-    @pytest.mark.django_db
-    def test_cart_update(self, setup):
-        browser = Client()
-        url = reverse('cart_update')
-        response = self.client.post(url, {'action': 'post', 'product_id': self.product.id, 'product_quantity': 5})
-        assert response.status_code == 200
-        assert response.json()['qty'] == 5  # Assuming the cart was updated to have three of the product
+@pytest.mark.django_db
+def test_cart_update():
+    client = Client()
+    url = reverse('cart-update')
+    response = client.post(url, {'action': 'post', 'product_id': product.id, 'product_quantity': 5})
+    assert response.status_code == 200
+    assert response.json()['qty'] == 5                                                                                  # product_quantity=5, so 5 of the product

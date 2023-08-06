@@ -13,6 +13,7 @@ urlpatterns = [
     # Individual category, updating slug to reference category_slug from list_category function
     path('search/<slug:category_slug>/', views.list_category, name='list-category'),  # referencing a slug variable
 
+
     #Searchbar functionality
     path('search/', views.search, name='search'),
 

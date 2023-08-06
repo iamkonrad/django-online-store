@@ -59,8 +59,8 @@ class Product(models.Model):
 
 
 class Tag(models.Model):                                                                                                # Many to many relationship with Products category
-    tag_name = models.CharField(max_length=128)
-    tag_slug = models.SlugField(max_length=255)                                                                         # BEST SELLERS, NEW ARRIVALS
+    tag_name = models.CharField(max_length=128,unique=True)
+    tag_slug = models.SlugField(max_length=255, unique=True)                                                            # BEST SELLERS, NEW ARRIVALS
 
     def __str__(self):
         return self.tag_name
