@@ -67,7 +67,7 @@ class UpdateUserForm(forms.ModelForm):
 
         email=self.cleaned_data.get("email")
 
-        if User.objects.filter(email=email).eclude(pk=self.instance.pk).exists():                                       #checking if an email address already exists in a database
+        if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():                                       #checking if an email address already exists in a database
                                                                                                                         #user can update an username without updating his email address
             raise forms.ValidationError('This email is invalid')
 

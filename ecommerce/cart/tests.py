@@ -15,10 +15,9 @@ def test_cart_summary():
     assert response.status_code == 200
     assert 'cart' in response.context
 
-@pytest.mark.django_db #OK
-def test_cart_add():
+@pytest.mark.django_db #OKKKKKKKK
+def test_cart_add(product):
     client = Client()
-    product = Product.objects.create(title="Havana Shirt", price=125)
     url = reverse('cart-add')
     response = client.post(url, {'action': 'post', 'product_id': product.id, 'product_quantity': 3})
     assert response.status_code == 200

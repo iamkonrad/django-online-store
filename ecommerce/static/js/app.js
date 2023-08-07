@@ -5,7 +5,7 @@ setTimeout(function()
 {
 
 
-    message_timoeut.style.display="none";
+    message_timeout.style.display="none";
 
 
 },2500)

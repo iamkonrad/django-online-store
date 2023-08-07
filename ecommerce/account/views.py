@@ -128,12 +128,28 @@ def my_login(request):
     return render(request,'account/my-login.html',context=context)
 
 
-def user_logout(request):                                                                                               #clearing the session
 
-    auth.logout(request)
+def user_logout(request):
 
-    messages.success(request, "Logout success!")                                                                        #once a user logs out he will be redirected to store and
-                                                                                                                        #shown a message
+    try:
+                                                                                                                        # clearing the session
+        for key in list(request.session.keys()):
+
+            if key == 'session_key':
+
+                continue
+
+            else:
+
+                del request.session[key]
+
+
+    except KeyError:
+
+        pass
+
+
+    messages.success(request, "Logout success")                                                                         #once a user logs out he will be redirected to store and                                                                                                                      #shown a messag
     return redirect("store")
 
 @login_required(login_url='my-login')

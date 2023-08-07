@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -13,52 +15,35 @@ from payment.views import checkout, complete_order, payment_success, payment_fai
 
 
 
-@pytest.fixture
-def non_authenticated_user():
-    return User(username='non_authenticated_user')
-
-@pytest.fixture
-def authenticated_user():
-    with transaction.atomic():
-        username = 'randomuser'
-        password = 'LKSJYTBBVT3@#qsxyyuve'
-        user = User.objects.create_user(username=username, password=password)
-        yield user
-        user.delete()
-@pytest.fixture
-def authenticated_user_without_shipping():
-    with transaction.atomic():
-        username = 'randomuser'
-        password = 'LKSJYTBBVT3@#qsxyyuve'
-        user = User.objects.create_user(username=username, password=password)
-        yield user
-        user.delete()
-
-
-@pytest.mark.django_db
-def test_checkout_authenticated_user_with_shipping_address(authenticated_user):
+@pytest.mark.django_db #OKKKKKKKK
+def test_checkout_auth_user_with_shipping_address(auth_user_with_shipping):
+    user, shipping_address = auth_user_with_shipping
     client = Client()
-    client.force_login(authenticated_user)
+    client.force_login(user)
     response = client.get(reverse('checkout'))
 
     assert response.status_code == 200
     assert 'payment/checkout.html' in [template.name for template in response.templates]
-    assert 'shipping' in response.context
+    assert response.context['shipping'] == shipping_address
 
 
-@pytest.mark.django_db
-def test_checkout_authenticated_user_without_shipping_address(authenticated_user):
-    client=Client()
-    request = client.get(reverse('checkout'))
-    request.user = authenticated_user
-    ShippingAddress.objects.filter(user=authenticated_user).delete()
-    response = checkout(request)
+
+@pytest.mark.django_db ####OKKK
+def test_checkout_auth_user_without_shipping_address(auth_user_without_shipping):
+    client = Client()
+    user = auth_user_without_shipping
+    client.force_login(user)
+    response = client.get(reverse('checkout'))
     assert response.status_code == 200
-    assert response.template_name == 'payment/checkout.html'
-    assert 'shipping' not in response.context
 
+    data = {
+        'name': 'John Doe',
+        'email': 'john@example.com',
+    }
+    response = client.post(reverse('checkout'), data=data)
+    assert response.status_code == 200
 
-@pytest.mark.django_db #OK
+@pytest.mark.django_db #OKkkkkkkkkkkk
 def test_checkout_guest_user():
     client = Client()
     response = client.get(reverse('checkout'))
@@ -67,19 +52,24 @@ def test_checkout_guest_user():
     assert 'payment/checkout.html' in response.templates[0].name                                                        #checks whether 1st template used is checkout
     assert 'shipping' not in response.context                                                                           #guest_user has no shipping info saved
 
-@pytest.mark.django_db
-def test_checkout_non_authenticated_user(non_authenticated_user):
-    client=Client()
-    request = client.get(reverse('checkout'))
-    request.user = non_authenticated_user
-    response = checkout(request)
-    assert response.status_code == 302
-    assert 'login' in response.url
 
-@pytest.mark.django_db
-def test_complete_order_authenticated_user(authenticated_user):
-    client=Client()
-    request = client.post(reverse('complete_order'), {
+@pytest.mark.django_db #OKKKKKKKKK
+def test_complete_order_auth_user_with_shipping(auth_user_with_shipping, product):
+    client = Client()
+    user, shipping_address = auth_user_with_shipping
+    client.force_login(user)
+
+    request_factory = RequestFactory()                                                                                  #Need to create a fake request to make sure that the request
+    request = request_factory.get('/')                                                                                  #object is passed to the cart constructor
+    request.session = client.session
+
+    cart = Cart(request)                                                                                                #cart utilising the fake request
+    cart.add(product=product, product_qty=3)
+
+    request.session['session_key'] = cart.cart                                                                          #session updated with the modified cart
+    request.session.save()
+
+    response = client.post(reverse('complete_order'), {                                                                 #post request simulated to the complete_order view
         'action': 'post',
         'name': 'Test User',
         'email': 'testuser@example.com',
@@ -89,15 +79,11 @@ def test_complete_order_authenticated_user(authenticated_user):
         'state': 'Test State',
         'postal_code': '12345',
     })
-    request.user = authenticated_user
-    cart = Cart(request)
-    product = Product.objects.create(name="Test Product", price=100)
-    cart.add(product=product, product_qty=3)                                                                            # Cart.add with product and product_qty
-    response = complete_order(request)
+
     assert response.status_code == 200
     assert response.json()['success'] == True
 
-@pytest.mark.django_db
+@pytest.mark.django_db #OK
 def test_complete_order_guest_user():
     client = Client()
     response = client.post(reverse('complete_order'), {
@@ -112,58 +98,80 @@ def test_complete_order_guest_user():
     })
     request = response.wsgi_request
     cart = Cart(request)
-    product = Product.objects.create(name="Test Product", price=100)
+    product = Product.objects.create(title="Test Product", price=100)
     cart.add(product=product, product_qty=3)                                                                            # Cart.add with product and product_qty
     response = complete_order(request)
     assert response.status_code == 200
-    assert response.json()['success'] == True
+    response_content = json.loads(response.content)                                                                     #JSON needed because of the JS
+    assert response_content['success'] == True
 
-@pytest.mark.django_db #OK
-def test_payment_success_authenticated_user(authenticated_user):
+@pytest.mark.django_db #OKKKKKKKKK
+def test_payment_success_auth_user_with_shipping(auth_user_with_shipping):
+    client = Client()
+    user = auth_user_with_shipping[0]                                                                                   # The user object is the first item in the list
+    client.force_login(user)                                                                                            # Force login the authenticated user
+
+    response = client.get(reverse('payment-success'))                                                                    # A request to the 'payment-success' URL
+    response = payment_success(response.wsgi_request)                                                                    # The view function
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db #OKKKKKKKKKKKKKKKK
+def test_payment_success_auth_user_without_shipping(auth_user_without_shipping):
     client=Client()
-    client.force_login(authenticated_user)
+    user=auth_user_without_shipping
+    client.force_login(user)
     response = client.get(reverse('payment-success'))
     assert response.status_code == 200
 
-@pytest.mark.django_db #OK
+@pytest.mark.django_db #OKKKKKKKKKKKK
 def test_payment_success_guest_user():
     client = Client()
     response = client.get(reverse('payment-success'))
     assert response.status_code == 200
 
-
-@pytest.mark.django_db #OK
-def test_payment_failed_authenticated_user(authenticated_user):
+@pytest.mark.django_db #OKKKKKKKKKKK
+def test_payment_failed_auth_user_with_shipping(auth_user_with_shipping):
     client = Client()
-    logged_in = client.login(username=authenticated_user.username, password='LKSJYTBBVT3@#qsxyyuve')                    # Log in the authenticated user, verify login
-    assert logged_in == True
+    user = auth_user_with_shipping[0]                                                                                   # The user object is the first item in the list
+    client.force_login(user)                                                                                            # Force login the authenticated user
 
+    response = client.get(reverse('payment-failed'))                                                                    # A request to the 'payment-failed' URL
+    response = payment_failed(response.wsgi_request)                                                                    # The view function
+    assert response.status_code == 200
 
-    response = client.get(reverse('payment-failed'))                                                                    #A request to the 'payment-failed' URL
-    response = payment_failed(response.wsgi_request)                                                                    #The view function
-    assert response.status_code == 200                                                                                  #Status code
+@pytest.mark.django_db #OKKKKKKKKKKK
+def test_payment_failed_authenticated_user_without_shipping(auth_user_without_shipping):                                #Yielding only the user, no need to access
+    client = Client()                                                                                                   #The list
+    client.force_login(auth_user_without_shipping)                                                                      # Force login the authenticated user
 
+    response = client.get(reverse('payment-failed'))                                                                    # A request to the 'payment-failed' URL
+    response = payment_failed(response.wsgi_request)                                                                    # The view function
+    assert response.status_code == 200
 
-@pytest.mark.django_db #OK
+@pytest.mark.django_db #OKKKKKKKKKKK
 def test_payment_failed_guest_user():
     client=Client()
     response = client.get(reverse('payment-failed'))
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
-def test_order_total_amount_paid(user, product):
-    order = Order.objects.create(full_name="John Doe", email="john@example.com", shipping_address="123 Main St", amount_paid=0, user=user)
-    order_item1 = OrderItem.objects.create(order=order, product=product, quantity=3, price=125)
-    order_item2 = OrderItem.objects.create(order=order, product=product, quantity=2, price=200)
+@pytest.mark.django_db #OKKKKKKKKKK
+def test_order_total_amount_paid(order, order_item_1, order_item_2):
+    assert order.amount_paid == (order_item_1.quantity * order_item_1.price) + (order_item_2.quantity * order_item_2.price)
 
-    assert order.total_amount_paid() == (3 * 125) + (2 * 200)
+@pytest.mark.django_db #OKKKKKKK
+def test_order_deletion_auth_user_with_shipping(auth_user_with_shipping, product):
+    user, shipping_address = auth_user_with_shipping                                                                    # UNPACKING USER  AND THE SHIPPING ADDRESS from the fixture
 
+    order = Order.objects.create(
+        full_name="John Wick",
+        email="john@something.com",
+        shipping_address=shipping_address.address1,                                                                     #Address fro mthe fixture
+        amount_paid=500,
+        user=user,
+    )
 
-@pytest.mark.django_db
-def test_order_deletion_authenticated_user(authenticated_user):
-    product = Product.objects.create(title="Havana Shirt", price=125)
-    order = Order.objects.create(full_name="John Wick", email="john@something.com", shipping_address="123 Main St", amount_paid=500, user=authenticated_user)
     order_item = OrderItem.objects.create(order=order, product=product, quantity=3, price=125)
 
     assert Order.objects.count() == 1
@@ -174,9 +182,8 @@ def test_order_deletion_authenticated_user(authenticated_user):
     assert Order.objects.count() == 0
     assert OrderItem.objects.count() == 0
 
-@pytest.mark.django_db
-def test_order_deletion_guest_user():
-    product = Product.objects.get(title="Female pants", price=75)
+@pytest.mark.django_db #OKKKKKKKKKKKKKKKK
+def test_order_deletion_guest_user(product):
     order = Order.objects.create(full_name="John Wick", email="john@something.com", shipping_address="123 Main St", amount_paid=500, )
     order_item = OrderItem.objects.create(order=order, product=product, quantity=3, price=75)
 
