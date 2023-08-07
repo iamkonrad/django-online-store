@@ -1,6 +1,5 @@
 import pytest
-from django.contrib.auth.models import User, Permission
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
 from django.db import transaction
 
 from payment.models import ShippingAddress, OrderItem, Order
@@ -28,15 +27,15 @@ def auth_user_with_shipping():
     with transaction.atomic():
         username = 'randomuser'
         password = 'LKSJYTBBVT3@#qsxyyuve'
-        user = User.objects.create_user(username=username, password=password)
+        user = User.objects.create_user(username=username, password=password, is_active=True)
 
         shipping_address = ShippingAddress.objects.create(
             user=user,
-            full_name='John Doe',
-            email='johndoe@example.com',
-            address1='123 Main St',
+            full_name='Jimmy Wang',
+            email='jimmy@stg.com',
+            address1='13 Main St',
             address2='Apt 4B',
-            city='Springfield',
+            city='Somethingtown',
             postal_code='12345',
         )
 
@@ -49,9 +48,20 @@ def auth_user_without_shipping():
     with transaction.atomic():
         username = 'randomuser12'
         password = 'LT3@#yyuve'
-        user = User.objects.create_user(username=username, password=password)
+        user = User.objects.create_user(username=username, password=password,is_active=True)
         yield user
         user.delete()
+
+@pytest.fixture
+def unauth_user():
+    with transaction.atomic():
+        username = 'randomuser132'
+        password = 'LwT3@#yyuve'
+        user = User.objects.create_user(username=username, password=password,is_active=False)
+        yield user
+        user.delete()
+
+
 
 @pytest.fixture
 def order(auth_user_with_shipping):

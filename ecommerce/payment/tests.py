@@ -2,20 +2,15 @@ import json
 
 import pytest
 from django.urls import reverse
-from django.contrib.auth.models import User
 from django.test import RequestFactory, Client
-from django.db import transaction
 
-from store.models import Product
-from .models import ShippingAddress, Order, OrderItem, Product
+from .models import Order, OrderItem, Product
 from cart.cart import Cart
-from django.http import JsonResponse
-from django.shortcuts import render
-from payment.views import checkout, complete_order, payment_success, payment_failed
+from payment.views import complete_order, payment_success, payment_failed
 
 
 
-@pytest.mark.django_db #OKKKKKKKK
+@pytest.mark.django_db #OK
 def test_checkout_auth_user_with_shipping_address(auth_user_with_shipping):
     user, shipping_address = auth_user_with_shipping
     client = Client()
@@ -28,7 +23,7 @@ def test_checkout_auth_user_with_shipping_address(auth_user_with_shipping):
 
 
 
-@pytest.mark.django_db ####OKKK
+@pytest.mark.django_db #OK
 def test_checkout_auth_user_without_shipping_address(auth_user_without_shipping):
     client = Client()
     user = auth_user_without_shipping
@@ -43,7 +38,7 @@ def test_checkout_auth_user_without_shipping_address(auth_user_without_shipping)
     response = client.post(reverse('checkout'), data=data)
     assert response.status_code == 200
 
-@pytest.mark.django_db #OKkkkkkkkkkkk
+@pytest.mark.django_db #OK
 def test_checkout_guest_user():
     client = Client()
     response = client.get(reverse('checkout'))
@@ -53,7 +48,7 @@ def test_checkout_guest_user():
     assert 'shipping' not in response.context                                                                           #guest_user has no shipping info saved
 
 
-@pytest.mark.django_db #OKKKKKKKKK
+@pytest.mark.django_db #OK
 def test_complete_order_auth_user_with_shipping(auth_user_with_shipping, product):
     client = Client()
     user, shipping_address = auth_user_with_shipping
@@ -105,7 +100,7 @@ def test_complete_order_guest_user():
     response_content = json.loads(response.content)                                                                     #JSON needed because of the JS
     assert response_content['success'] == True
 
-@pytest.mark.django_db #OKKKKKKKKK
+@pytest.mark.django_db #OK
 def test_payment_success_auth_user_with_shipping(auth_user_with_shipping):
     client = Client()
     user = auth_user_with_shipping[0]                                                                                   # The user object is the first item in the list
@@ -116,7 +111,7 @@ def test_payment_success_auth_user_with_shipping(auth_user_with_shipping):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db #OKKKKKKKKKKKKKKKK
+@pytest.mark.django_db #OK
 def test_payment_success_auth_user_without_shipping(auth_user_without_shipping):
     client=Client()
     user=auth_user_without_shipping
@@ -124,13 +119,13 @@ def test_payment_success_auth_user_without_shipping(auth_user_without_shipping):
     response = client.get(reverse('payment-success'))
     assert response.status_code == 200
 
-@pytest.mark.django_db #OKKKKKKKKKKKK
+@pytest.mark.django_db #OK
 def test_payment_success_guest_user():
     client = Client()
     response = client.get(reverse('payment-success'))
     assert response.status_code == 200
 
-@pytest.mark.django_db #OKKKKKKKKKKK
+@pytest.mark.django_db #OK
 def test_payment_failed_auth_user_with_shipping(auth_user_with_shipping):
     client = Client()
     user = auth_user_with_shipping[0]                                                                                   # The user object is the first item in the list
@@ -140,7 +135,7 @@ def test_payment_failed_auth_user_with_shipping(auth_user_with_shipping):
     response = payment_failed(response.wsgi_request)                                                                    # The view function
     assert response.status_code == 200
 
-@pytest.mark.django_db #OKKKKKKKKKKK
+@pytest.mark.django_db #OK
 def test_payment_failed_authenticated_user_without_shipping(auth_user_without_shipping):                                #Yielding only the user, no need to access
     client = Client()                                                                                                   #The list
     client.force_login(auth_user_without_shipping)                                                                      # Force login the authenticated user
@@ -149,25 +144,25 @@ def test_payment_failed_authenticated_user_without_shipping(auth_user_without_sh
     response = payment_failed(response.wsgi_request)                                                                    # The view function
     assert response.status_code == 200
 
-@pytest.mark.django_db #OKKKKKKKKKKK
+@pytest.mark.django_db #OK
 def test_payment_failed_guest_user():
     client=Client()
     response = client.get(reverse('payment-failed'))
     assert response.status_code == 200
 
 
-@pytest.mark.django_db #OKKKKKKKKKK
+@pytest.mark.django_db #OK
 def test_order_total_amount_paid(order, order_item_1, order_item_2):
     assert order.amount_paid == (order_item_1.quantity * order_item_1.price) + (order_item_2.quantity * order_item_2.price)
 
-@pytest.mark.django_db #OKKKKKKK
+@pytest.mark.django_db #OK
 def test_order_deletion_auth_user_with_shipping(auth_user_with_shipping, product):
-    user, shipping_address = auth_user_with_shipping                                                                    # UNPACKING USER  AND THE SHIPPING ADDRESS from the fixture
+    user, shipping_address = auth_user_with_shipping                                                                    #UNPACKING USER  AND THE SHIPPING ADDRESS from the fixture
 
     order = Order.objects.create(
         full_name="John Wick",
         email="john@something.com",
-        shipping_address=shipping_address.address1,                                                                     #Address fro mthe fixture
+        shipping_address=shipping_address.address1,                                                                     #Address from the fixture
         amount_paid=500,
         user=user,
     )
@@ -182,9 +177,9 @@ def test_order_deletion_auth_user_with_shipping(auth_user_with_shipping, product
     assert Order.objects.count() == 0
     assert OrderItem.objects.count() == 0
 
-@pytest.mark.django_db #OKKKKKKKKKKKKKKKK
-def test_order_deletion_guest_user(product):
-    order = Order.objects.create(full_name="John Wick", email="john@something.com", shipping_address="123 Main St", amount_paid=500, )
+@pytest.mark.django_db #OK
+def test_order_deletion_guest_user(product,order):
+    order = order
     order_item = OrderItem.objects.create(order=order, product=product, quantity=3, price=75)
 
     assert Order.objects.count() == 1

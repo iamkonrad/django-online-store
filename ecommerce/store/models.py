@@ -45,7 +45,7 @@ class Product(models.Model):
 
 
     class Meta:
-        verbose_name_plural = 'products'                                                       #django by default adds an s to category name
+        verbose_name_plural = 'products'                                                          #django by default adds an s to category name
 
 
     def __str__(self):
