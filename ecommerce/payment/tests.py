@@ -12,8 +12,8 @@ from payment.views import complete_order, payment_success, payment_failed
 
 @pytest.mark.django_db #OK
 def test_checkout_auth_user_with_shipping_address(auth_user_with_shipping):
-    user, shipping_address = auth_user_with_shipping
     client = Client()
+    user, shipping_address, password = auth_user_with_shipping
     client.force_login(user)
     response = client.get(reverse('checkout'))
 
@@ -26,14 +26,14 @@ def test_checkout_auth_user_with_shipping_address(auth_user_with_shipping):
 @pytest.mark.django_db #OK
 def test_checkout_auth_user_without_shipping_address(auth_user_without_shipping):
     client = Client()
-    user = auth_user_without_shipping
+    user, password = auth_user_without_shipping
     client.force_login(user)
     response = client.get(reverse('checkout'))
     assert response.status_code == 200
 
     data = {
-        'name': 'John Doe',
-        'email': 'john@example.com',
+        'name': user.username,                                                                                          #Using the username as the name
+        'email': user.email,                                                                                            # Using the email from the fixture
     }
     response = client.post(reverse('checkout'), data=data)
     assert response.status_code == 200
@@ -51,7 +51,7 @@ def test_checkout_guest_user():
 @pytest.mark.django_db #OK
 def test_complete_order_auth_user_with_shipping(auth_user_with_shipping, product):
     client = Client()
-    user, shipping_address = auth_user_with_shipping
+    user, shipping_address,password = auth_user_with_shipping
     client.force_login(user)
 
     request_factory = RequestFactory()                                                                                  #Need to create a fake request to make sure that the request
@@ -114,7 +114,7 @@ def test_payment_success_auth_user_with_shipping(auth_user_with_shipping):
 @pytest.mark.django_db #OK
 def test_payment_success_auth_user_without_shipping(auth_user_without_shipping):
     client=Client()
-    user=auth_user_without_shipping
+    user, password=auth_user_without_shipping
     client.force_login(user)
     response = client.get(reverse('payment-success'))
     assert response.status_code == 200
@@ -138,7 +138,8 @@ def test_payment_failed_auth_user_with_shipping(auth_user_with_shipping):
 @pytest.mark.django_db #OK
 def test_payment_failed_authenticated_user_without_shipping(auth_user_without_shipping):                                #Yielding only the user, no need to access
     client = Client()                                                                                                   #The list
-    client.force_login(auth_user_without_shipping)                                                                      # Force login the authenticated user
+    user, password=auth_user_without_shipping
+    client.force_login(user)                                                                                            # Force login the authenticated user
 
     response = client.get(reverse('payment-failed'))                                                                    # A request to the 'payment-failed' URL
     response = payment_failed(response.wsgi_request)                                                                    # The view function
@@ -155,19 +156,38 @@ def test_payment_failed_guest_user():
 def test_order_total_amount_paid(order, order_item_1, order_item_2):
     assert order.amount_paid == (order_item_1.quantity * order_item_1.price) + (order_item_2.quantity * order_item_2.price)
 
-@pytest.mark.django_db #OK
-def test_order_deletion_auth_user_with_shipping(auth_user_with_shipping, product):
-    user, shipping_address = auth_user_with_shipping                                                                    #UNPACKING USER  AND THE SHIPPING ADDRESS from the fixture
 
-    order = Order.objects.create(
-        full_name="John Wick",
-        email="john@something.com",
-        shipping_address=shipping_address.address1,                                                                     #Address from the fixture
-        amount_paid=500,
-        user=user,
-    )
+
+@pytest.mark.django_db
+def test_order_deletion_auth_user_with_shipping(auth_user_with_shipping, product, order):
+    client = Client()
+    user, shipping_address, password = auth_user_with_shipping
+    login = client.login(username=user.username, password=password)
+    assert login is True
 
     order_item = OrderItem.objects.create(order=order, product=product, quantity=3, price=125)
+
+    assert user.username == 'randomuser'
+    assert shipping_address.address1 == '13 Main St'
+
+    assert Order.objects.count() == 1
+    assert OrderItem.objects.count() == 1
+
+    order.delete()
+
+    assert Order.objects.count() == 0
+    assert OrderItem.objects.count() == 0
+
+@pytest.mark.django_db #OK
+def test_order_deletion_auth_user_without_shipping(auth_user_without_shipping, product, order):
+    client = Client()
+    user, password = auth_user_without_shipping
+    login = client.login(username=user.username, password=password)
+    assert login is True
+
+    order_item = OrderItem.objects.create(order=order, product=product, quantity=3, price=125)
+
+    assert user.username == 'randomuser12'
 
     assert Order.objects.count() == 1
     assert OrderItem.objects.count() == 1

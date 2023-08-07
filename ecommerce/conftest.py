@@ -27,7 +27,8 @@ def auth_user_with_shipping():
     with transaction.atomic():
         username = 'randomuser'
         password = 'LKSJYTBBVT3@#qsxyyuve'
-        user = User.objects.create_user(username=username, password=password, is_active=True)
+        email = 'jimmy@stg.com'
+        user = User.objects.create_user(username=username, password=password,email=email, is_active=True)
 
         shipping_address = ShippingAddress.objects.create(
             user=user,
@@ -39,17 +40,19 @@ def auth_user_with_shipping():
             postal_code='12345',
         )
 
-        yield [user, shipping_address]
-        user.delete()
+        yield user, shipping_address, password
         shipping_address.delete()
+        user.delete()
+
 
 @pytest.fixture
 def auth_user_without_shipping():
     with transaction.atomic():
         username = 'randomuser12'
         password = 'LT3@#yyuve'
-        user = User.objects.create_user(username=username, password=password,is_active=True)
-        yield user
+        email = 'johnny@stg.com'
+        user = User.objects.create_user(username=username, password=password, email=email, is_active=True)
+        yield user, password
         user.delete()
 
 @pytest.fixture
@@ -65,7 +68,7 @@ def unauth_user():
 
 @pytest.fixture
 def order(auth_user_with_shipping):
-    user, shipping_address = auth_user_with_shipping
+    user, shipping_address, password = auth_user_with_shipping
     order_obj = Order.objects.create(
         full_name="Simon Adebisi",
         email="john@something.com",

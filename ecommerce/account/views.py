@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from . forms import CreateUserForm, LoginForm, UpdateUserForm
 
 from payment.forms import ShippingForm                                                                                  #pushing changes with a form
-from payment.models import ShippingAddress, OrderItem  # queries on a model
+from payment.models import ShippingAddress, OrderItem                                                                   # queries on a model
 
 from django.contrib.auth.models import User
 

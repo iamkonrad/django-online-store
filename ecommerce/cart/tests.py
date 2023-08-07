@@ -72,7 +72,7 @@ def test_cart_contents_after_login(product, auth_user_with_shipping):
     cart.add(product=product, product_qty=3)
     request.session.save()                                                                                              #commiting the session
 
-    user, shipping_address = auth_user_with_shipping                                                                    #retrieving the user from the fixture
+    user, shipping_address, password = auth_user_with_shipping                                                          #retrieving the user from the fixture
     client.force_login(user)
 
 
