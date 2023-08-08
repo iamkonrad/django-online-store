@@ -23,7 +23,7 @@ def tag():
 
 #PAYMENT.TESTS
 @pytest.fixture
-def auth_user_with_shipping():
+def active_user_with_shipping():
     with transaction.atomic():
         username = 'randomuser'
         password = 'LKSJYTBBVT3@#qsxyyuve'
@@ -45,9 +45,8 @@ def auth_user_with_shipping():
         shipping_address.delete()
         user.delete()
 
-
 @pytest.fixture
-def auth_user_without_shipping():
+def active_user_without_shipping():
     with transaction.atomic():
         username = 'randomuser12'
         password = 'LT3@#yyuve'
@@ -57,7 +56,7 @@ def auth_user_without_shipping():
         user.delete()
 
 @pytest.fixture
-def unauth_user():
+def inactive_user():
     with transaction.atomic():
         username = 'randomuser132'
         password = 'LwMNyhe#yyuve'
@@ -69,8 +68,8 @@ def unauth_user():
 
 
 @pytest.fixture
-def order(auth_user_with_shipping):
-    user, shipping_address, _ = auth_user_with_shipping
+def order(active_user_with_shipping):
+    user, shipping_address, _ = active_user_with_shipping
     order_obj = Order.objects.create(
         full_name=shipping_address.full_name,                                                                           # Full_name from shipping_address
         email=shipping_address.email,                                                                                   # Email from shipping_address
@@ -82,8 +81,8 @@ def order(auth_user_with_shipping):
 
 
 @pytest.fixture
-def order_without_shipping(auth_user_without_shipping):
-    user, password = auth_user_without_shipping
+def order_without_shipping(active_user_without_shipping):
+    user, password = active_user_without_shipping
     order_obj = Order.objects.create(
         full_name="Jack Sparrow",
         email="jacksparrow@something.com",

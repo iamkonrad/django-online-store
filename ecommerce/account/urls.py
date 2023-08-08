@@ -1,7 +1,5 @@
 from django.urls import path
-
 from . import views                                                                                                     #in the same directory
-
 from django.contrib.auth import views as auth_views                                                                     #making use of django's built-in views;
                                                                                                                         #security; reusability
 

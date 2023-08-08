@@ -96,7 +96,6 @@ def complete_order(request):                                                    
 
 def payment_success(request):                                                                                           #Clearing shopping cart once transaction has been completed
 
-
     for key in list(request.session.keys()):
 
         if key =='session_key':                                                                                         #key located in cart/cart/ class cart, cart

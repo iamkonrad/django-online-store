@@ -62,7 +62,7 @@ def test_cart_update(product):
 
 
 @pytest.mark.django_db #OK
-def test_cart_contents_after_login(product, auth_user_with_shipping):
+def test_cart_contents_after_login(product, active_user_with_shipping):
     client = Client()
     request_factory = RequestFactory()                                                                                  #needed to create a request object
     request = request_factory.get(reverse('cart-summary'))                                                              #creating a mock request object
@@ -72,7 +72,7 @@ def test_cart_contents_after_login(product, auth_user_with_shipping):
     cart.add(product=product, product_qty=3)
     request.session.save()                                                                                              #commiting the session
 
-    user, shipping_address, password = auth_user_with_shipping                                                          #retrieving the user from the fixture
+    user, shipping_address, password = active_user_with_shipping                                                          #retrieving the user from the fixture
     client.force_login(user)
 
 

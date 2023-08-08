@@ -8,6 +8,7 @@ from django.urls import reverse
 from payment.models import ShippingAddress
 
 
+# REGISTRATION, LOGIN, LOGOUT, ACCOUNT, DELETE
 @pytest.mark.django_db #OK
 def test_new_user_registration():
     client=Client()
@@ -24,9 +25,9 @@ def test_new_user_registration():
     assert User.objects.filter(email='someemail@email.com').exists()
 
 @pytest.mark.django_db #OK
-def test_user_without_shipping_login(auth_user_without_shipping):
+def test_user_without_shipping_login(active_user_without_shipping):
     client = Client()
-    user,password = auth_user_without_shipping
+    user,password = active_user_without_shipping
     url = reverse('my-login')
     response = client.post(url, {'username': user.username, 'password': password})
     assert response.status_code == 302
@@ -34,9 +35,9 @@ def test_user_without_shipping_login(auth_user_without_shipping):
     assert auth.get_user(client).is_authenticated
 
 @pytest.mark.django_db #OK
-def test_user_with_shipping_login(auth_user_with_shipping):
+def test_user_with_shipping_login(active_user_with_shipping):
     client = Client()
-    user, shipping_address, password = auth_user_with_shipping
+    user, shipping_address, password = active_user_with_shipping
     url = reverse('my-login')
     response = client.post(url, {'username': user.username, 'password': password})
 
@@ -46,19 +47,19 @@ def test_user_with_shipping_login(auth_user_with_shipping):
 
 
 @pytest.mark.django_db #OK
-def test_inactive_user_login(unauth_user):
+def test_unauth_user_login(inactive_user):
     client = Client()
-    user = unauth_user
+    user, password = inactive_user
     url = reverse('my-login')
     response = client.post(url, {'username': user.username})
 
     assert response.status_code == 200                                                                                  #the request was processed successfully, but
     assert not auth.get_user(client).is_authenticated                                                                   #the user is not authenticated, so he won't be
                                                                                                                         #allowed to login
-@pytest.mark.django_db
-def test_inactive_user_login(unauth_user):
+@pytest.mark.django_db #OK
+def test_inactive_user_login(inactive_user):
     client = Client()
-    user,password = unauth_user
+    user,password = inactive_user
     url = reverse('my-login')
     response = client.post(url, {'username': user.username, 'password': password})
 
@@ -66,9 +67,9 @@ def test_inactive_user_login(unauth_user):
     assert not auth.get_user(client).is_authenticated                                                                   #a successful login
 
 @pytest.mark.django_db #OK
-def test_user_without_shipping_logout(auth_user_without_shipping):
+def test_user_without_shipping_logout(active_user_without_shipping):
     client=Client()
-    user, password = auth_user_without_shipping                                                                         # Unpack the user from the tuple
+    user, password = active_user_without_shipping                                                                         # Unpack the user from the tuple
     client.force_login(user)                                                                                            # Pass the user object
     url = reverse('user-logout')
     response = client.get(url)
@@ -77,9 +78,9 @@ def test_user_without_shipping_logout(auth_user_without_shipping):
     assert not auth.get_user(client).is_authenticated
 
 @pytest.mark.django_db #OK
-def test_user_with_shipping_logout(auth_user_with_shipping):
+def test_user_with_shipping_logout(active_user_with_shipping):
     client=Client()
-    user, shipping_address,password = auth_user_with_shipping
+    user, shipping_address,password = active_user_with_shipping
     client.force_login(user)
     url = reverse('user-logout')
     response = client.get(url)
@@ -88,37 +89,9 @@ def test_user_with_shipping_logout(auth_user_with_shipping):
     assert not auth.get_user(client).is_authenticated
 
 @pytest.mark.django_db #OK
-def test_profile_management_user_with_shipping(auth_user_with_shipping):
-    client=Client()
-    user, shipping_address, password = auth_user_with_shipping
-    client.force_login(user)
-    url = reverse('profile-management')
-    data = {'username': user.username, 'email': user.email}
-    response = client.post(url, data)
-    user.refresh_from_db()
-    assert response.status_code == 302
-    assert response.url == reverse('dashboard')
-    assert user.username == user.username
-    assert user.email == user.email
-
-@pytest.mark.django_db #OK
-def test_profile_management_user_without_shipping(auth_user_without_shipping):
-    client=Client()
-    user, password=auth_user_without_shipping
-    client.force_login(user)
-    url = reverse('profile-management')
-    data = {'username': user.username, 'email': user.email}
-    response = client.post(url, data)
-    user.refresh_from_db()
-    assert response.status_code == 302
-    assert response.url == reverse('dashboard')
-    assert user.username == user.username
-    assert user.email == user.email
-
-@pytest.mark.django_db #OK
-def test_delete_account_user_with_shipping(auth_user_with_shipping):
+def test_delete_account_user_with_shipping(active_user_with_shipping):
     client = Client()
-    user, shipping_address, password = auth_user_with_shipping
+    user, shipping_address, password = active_user_with_shipping
     client.force_login(user)
 
     url = reverse('delete-account')
@@ -129,12 +102,10 @@ def test_delete_account_user_with_shipping(auth_user_with_shipping):
 
     with pytest.raises(User.DoesNotExist):
         user.refresh_from_db()
-
-
 @pytest.mark.django_db  # OK
-def test_delete_account_user_without_shipping(auth_user_without_shipping):
+def test_delete_account_user_without_shipping(active_user_without_shipping):
     client = Client()
-    user, password = auth_user_without_shipping
+    user, password = active_user_without_shipping
     client.force_login(user)
 
     url = reverse('delete-account')
@@ -145,11 +116,94 @@ def test_delete_account_user_without_shipping(auth_user_without_shipping):
 
     with pytest.raises(User.DoesNotExist):
         user.refresh_from_db()
+
+
+#DASHBOARD
+@pytest.mark.django_db
+def test_access_the_dashboard_user_with_shipping(active_user_with_shipping):
+    client = Client()
+    user, shipping_address, password = active_user_with_shipping
+
+    logged_in = client.login(username=user.username, password=password)
+    assert logged_in is True
+
+    dashboard_url = reverse('dashboard')
+    response = client.get(dashboard_url)
+    assert response.status_code == 200
 
 @pytest.mark.django_db
-def test_manage_shipping_user_with_shipping(auth_user_with_shipping):
+def test_access_the_dashboard_user_without_shipping(active_user_without_shipping):
     client = Client()
-    user, shipping_address, password = auth_user_with_shipping
+    user, password = active_user_without_shipping
+
+    logged_in = client.login(username=user.username, password=password)
+    assert logged_in is True
+
+    dashboard_url = reverse('dashboard')
+    response = client.get(dashboard_url)
+    assert response.status_code == 200
+
+@pytest.mark.django_db
+def test_access_the_dashboard_guest_user():
+    client = Client()
+    dashboard_url = reverse('dashboard')
+    response = client.get(dashboard_url)
+
+    assert response.status_code == 302
+    assert response.url.startswith(reverse('my-login'))                                                                 #because of a login decorator, next startswith
+
+@pytest.mark.django_db
+def test_access_the_dashboard_unauth_user(inactive_user):
+    client = Client()
+    user,password = inactive_user
+    client.force_login(user)
+    url = reverse('dashboard')
+    response = client.get(url)
+
+    assert response.status_code == 302
+    assert 'my-login' in response.url                                                                                   #gets redirected to login, can't access the dashboard
+
+@pytest.mark.django_db #OK
+def test_profile_management_user_with_shipping(active_user_with_shipping):
+    client=Client()
+    user, shipping_address, password = active_user_with_shipping
+    client.force_login(user)
+    url = reverse('profile-management')
+    data = {'username': user.username, 'email': user.email}
+    response = client.post(url, data)
+    user.refresh_from_db()
+    assert response.status_code == 302
+    assert response.url == reverse('dashboard')
+    assert user.username == user.username
+    assert user.email == user.email
+
+@pytest.mark.django_db #OK
+def test_profile_management_user_without_shipping(active_user_without_shipping):
+    client=Client()
+    user, password=active_user_without_shipping
+    client.force_login(user)
+    url = reverse('profile-management')
+    data = {'username': user.username, 'email': user.email}
+    response = client.post(url, data)
+    user.refresh_from_db()
+    assert response.status_code == 302
+    assert response.url == reverse('dashboard')
+    assert user.username == user.username
+    assert user.email == user.email
+
+@pytest.mark.django_db #OK
+def test_profile_management_guest_user():
+    client = Client()
+    url = reverse('profile-management')
+    response = client.get(url)
+
+    assert response.status_code == 302                                                                                  #Should be redirected before even seeing the form
+    assert response.url.startswith(reverse('my-login'))                                                                 #Startswith because of log-in decorator
+
+@pytest.mark.django_db
+def test_manage_shipping_user_with_shipping(active_user_with_shipping):
+    client = Client()
+    user, shipping_address, password = active_user_with_shipping
     client.force_login(user)
     url = reverse('manage-shipping')
 
@@ -171,11 +225,22 @@ def test_manage_shipping_user_with_shipping(auth_user_with_shipping):
     dashboard_url = reverse('dashboard')
     assert response_post.url == dashboard_url
 
+@pytest.mark.django_db
+def test_profile_management_user_with_shipping(active_user_with_shipping):
+    client = Client()
+    user, shipping_address, password = active_user_with_shipping
+
+    logged_in = client.login(username=user.username, password=password)
+    assert logged_in is True
+
+    dashboard_url = reverse('dashboard')
+    response = client.get(dashboard_url)
+    assert response.status_code == 200                                                                                  #the user can access the dashboard
 
 @pytest.mark.django_db
-def test_manage_shipping_user_without_shipping(auth_user_without_shipping):
+def test_manage_shipping_user_without_shipping(active_user_without_shipping):
     client = Client()
-    user, password = auth_user_without_shipping
+    user, password = active_user_without_shipping
     client.force_login(user)
     url = reverse('manage-shipping')
 
@@ -205,9 +270,9 @@ def test_manage_shipping_user_without_shipping(auth_user_without_shipping):
     assert shipping_address.state == 'NY'
 
 @pytest.mark.django_db
-def test_track_orders_user_with_shipping(auth_user_with_shipping, order):
+def test_track_orders_user_with_shipping(active_user_with_shipping, order):
     client = Client()
-    user, shipping_address, password = auth_user_with_shipping
+    user, shipping_address, password = active_user_with_shipping
     client.force_login(user)
 
     url = reverse('track-orders')
@@ -225,6 +290,6 @@ def test_track_orders_user_without_shipping(order_without_shipping):
     response = client.get(url)
     assert response.status_code == 200
 
-    assert order_without_shipping.user == user                                                                          # Assert that the user without a
-    assert 'orders' in response.context                                                                                 # shipping address has no order history
-    assert len(response.context['orders']) == 0
+    assert order_without_shipping.user == user
+    assert 'orders' in response.context                                                                                 # Assert that the user without a
+    assert len(response.context['orders']) == 0                                                                         # shipping address has no order history

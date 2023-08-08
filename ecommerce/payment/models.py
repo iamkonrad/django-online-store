@@ -31,7 +31,7 @@ class ShippingAddress(models.Model):
 
     #user = models.ForeignKey(User, on_delete=models.CASCADE)                                                           #NO GUEST CHECKOUTS (if needed)
 
-    class Meta:                                                                                                         #helps to determine the plural of "Shipping Address"
+    class Meta:                                                                                                         # choosing the plural of "Shipping Address"
         verbose_name_plural = 'Shipping Address'
 
 
@@ -53,12 +53,11 @@ class Order(models.Model):
 
                             #Foreign key
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True,  blank=True)                                    #represents the  user who placed the order, one to many, one user
-                                                                                                                        #many orders; user an intermediary field
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True,  blank=True)                                    #represents the  user who placed the order, one to many,
+                                                                                                                        #one user: many orders; user an intermediary field
 
 
     def __str__(self):                                                                                                  #orders will get displayed as Order -# 1 instead of Order (1)
-
         return 'Order - #' + str(self.id)
 
 
@@ -69,8 +68,8 @@ class OrderItem(models.Model):
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)                                               #order items linked to order class, multiple items linked to one order
 
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)                                           #multiple order item objects can be associated with one product
-
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)                                           #multiple order item objects can be associated with one product, but
+                                                                                                                        # an individual order item associated with one product
 
     quantity = models.PositiveBigIntegerField(default=1)
 

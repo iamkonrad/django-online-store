@@ -6,13 +6,13 @@ from django.shortcuts import get_object_or_404
 def store(request):
     all_products = Product.objects.all()                                                                                #getting hold of all the products
     all_tags = Tag.objects.all()                                                                                        #retrieving objects from the database
-                                                                                                                        #generally responsible for displaying the main store page
+
     context = {
         'all_products': all_products,
         'all_tags': all_tags,
     }
 
-    return render(request, 'store/store.html', context)
+    return render(request, 'store/store.html', context)                                                                 # displayed on the store page after retrieval
 
 
 def categories(request):
