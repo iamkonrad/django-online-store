@@ -70,15 +70,16 @@ def unauth_user():
 
 @pytest.fixture
 def order(auth_user_with_shipping):
-    user, shipping_address, password = auth_user_with_shipping
+    user, shipping_address, _ = auth_user_with_shipping
     order_obj = Order.objects.create(
-        full_name="Simon Adebisi",
-        email="john@something.com",
+        full_name=shipping_address.full_name,                                                                           # Full_name from shipping_address
+        email=shipping_address.email,                                                                                   # Email from shipping_address
         shipping_address=shipping_address.address1,
         amount_paid=875,
         user=user,
     )
     return order_obj
+
 
 @pytest.fixture
 def order_without_shipping(auth_user_without_shipping):

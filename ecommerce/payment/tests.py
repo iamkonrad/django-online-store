@@ -47,36 +47,50 @@ def test_checkout_guest_user():
     assert 'payment/checkout.html' in response.templates[0].name                                                        #checks whether 1st template used is checkout
     assert 'shipping' not in response.context                                                                           #guest_user has no shipping info saved
 
-
-@pytest.mark.django_db #OK
+@pytest.mark.django_db
 def test_complete_order_auth_user_with_shipping(auth_user_with_shipping, product):
     client = Client()
-    user, shipping_address,password = auth_user_with_shipping
+    user, shipping_address, password = auth_user_with_shipping
     client.force_login(user)
 
     request_factory = RequestFactory()                                                                                  #Need to create a fake request to make sure that the request
     request = request_factory.get('/')                                                                                  #object is passed to the cart constructor
     request.session = client.session
 
-    cart = Cart(request)                                                                                                #cart utilising the fake request
+    cart = Cart(request)                                                                                                #Cart utilizing the fake request
     cart.add(product=product, product_qty=3)
 
-    request.session['session_key'] = cart.cart                                                                          #session updated with the modified cart
+    request.session['session_key'] = cart.cart
     request.session.save()
 
-    response = client.post(reverse('complete_order'), {                                                                 #post request simulated to the complete_order view
+    post_data = {                                                                                                        #Data used for the POST request
         'action': 'post',
-        'name': 'Test User',
-        'email': 'testuser@example.com',
-        'address1': 'Test Address 1',
-        'address2': 'Test Address 2',
-        'city': 'Test City',
-        'state': 'Test State',
-        'postal_code': '12345',
-    })
+        'name': shipping_address.full_name,
+        'email': shipping_address.email,
+        'address1': shipping_address.address1,
+        'address2': shipping_address.address2,
+        'city': shipping_address.city,
+        'state': shipping_address.state,
+        'postal_code': shipping_address.postal_code,
+    }
+
+    response = client.post(reverse('complete_order'), post_data)
 
     assert response.status_code == 200
     assert response.json()['success'] == True
+
+    order_obj = Order.objects.filter(user=user).last()                                                                  # Retrieve the order from the database using user
+
+
+    assert order_obj.full_name == shipping_address.full_name                                                            # Assert that the order details match the expected values
+    assert order_obj.email == shipping_address.email
+    assert order_obj.shipping_address == "\n".join([
+        shipping_address.address1,
+        shipping_address.address2,
+        shipping_address.city,
+        shipping_address.state,
+        shipping_address.postal_code
+    ])
 
 @pytest.mark.django_db #OK
 def test_complete_order_guest_user():

@@ -1,7 +1,5 @@
 from django.db import models
-
 from django.contrib.auth.models import User
-
 from store.models import Product
 
 
@@ -20,11 +18,9 @@ class ShippingAddress(models.Model):
     postal_code = models.CharField(max_length=255)
 
 
-
     #optional
 
     state = models.CharField(max_length=255, null=True, blank=True)
-
 
                        # Foreign key, one_to many relationship                                                          #a user can have multiple shipping addresses, each shipping
                                                                                                                         #address belongs to one user ONLY
@@ -40,8 +36,7 @@ class ShippingAddress(models.Model):
 
 
     def __str__(self):                                                                                                  #instead of shipping address 1,2 shipping address will
-                                                                                                                        #be created based on the PK Shipping address-1,-2,etc.
-        return 'Shipping Address -' +str(self.id)
+        return 'Shipping Address -' +str(self.id)                                                                       #be created based on the PK Shipping address-1,-2,etc.
 
 
 class Order(models.Model):

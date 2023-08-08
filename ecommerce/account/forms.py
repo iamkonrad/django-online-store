@@ -24,7 +24,7 @@ class CreateUserForm(UserCreationForm):
 
         email=self.cleaned_data.get("email")
 
-        if User.objects.filter(email=email).exists():                                                                   #checking if an email address already exists in a database
+        if User.objects.filter(email=email).exists():                                                                   #checking if an email address already exists in the database
             raise forms.ValidationError('This email is invalid')
 
         if len(email) >= 350:
