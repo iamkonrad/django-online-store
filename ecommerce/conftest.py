@@ -27,13 +27,13 @@ def auth_user_with_shipping():
     with transaction.atomic():
         username = 'randomuser'
         password = 'LKSJYTBBVT3@#qsxyyuve'
-        email = 'jimmy@stg.com'
+        email = 'jimm21y@stg.com'
         user = User.objects.create_user(username=username, password=password,email=email, is_active=True)
 
         shipping_address = ShippingAddress.objects.create(
             user=user,
             full_name='Jimmy Wang',
-            email='jimmy@stg.com',
+            email='jimm21y@stg.com',
             address1='13 Main St',
             address2='Apt 4B',
             city='Somethingtown',
@@ -59,9 +59,10 @@ def auth_user_without_shipping():
 def unauth_user():
     with transaction.atomic():
         username = 'randomuser132'
-        password = 'LwT3@#yyuve'
+        password = 'LwMNyhe#yyuve'
+        email ='johhny32wonka@stg.com'
         user = User.objects.create_user(username=username, password=password,is_active=False)
-        yield user
+        yield user,password
         user.delete()
 
 

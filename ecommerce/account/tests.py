@@ -1,15 +1,10 @@
 import pytest
 
 from django.contrib import auth
-from django.contrib.auth.tokens import default_token_generator
-from django.urls import reverse
 from django.contrib.auth.models import User
 from django.test import Client
 from django.urls import reverse
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from account.token import user_tokenizer_generate, UserVerificationTokenGenerator
-from django.utils.encoding import force_bytes
+
 
 
 
@@ -60,7 +55,15 @@ def test_inactive_user_login(unauth_user):
     assert response.status_code == 200                                                                                  #the request was processed successfully, but
     assert not auth.get_user(client).is_authenticated                                                                   #the user is not authenticated, so he won't be
                                                                                                                         #allowed to login
+@pytest.mark.django_db
+def test_inactive_user_login(unauth_user):
+    client = Client()
+    user,password = unauth_user
+    url = reverse('my-login')
+    response = client.post(url, {'username': user.username, 'password': password})
 
+    assert response.status_code != 302                                                                                  #asserts status code is different from 302, that is
+    assert not auth.get_user(client).is_authenticated                                                                   #a successful login
 
 @pytest.mark.django_db #OK
 def test_user_without_shipping_logout(auth_user_without_shipping):

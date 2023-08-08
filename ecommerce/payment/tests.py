@@ -159,13 +159,11 @@ def test_order_total_amount_paid(order, order_item_1, order_item_2):
 
 
 @pytest.mark.django_db
-def test_order_deletion_auth_user_with_shipping(auth_user_with_shipping, product, order):
+def test_order_deletion_auth_user_with_shipping(auth_user_with_shipping, product, order, order_item_1):
     client = Client()
     user, shipping_address, password = auth_user_with_shipping
     login = client.login(username=user.username, password=password)
     assert login is True
-
-    order_item = OrderItem.objects.create(order=order, product=product, quantity=3, price=125)
 
     assert user.username == 'randomuser'
     assert shipping_address.address1 == '13 Main St'
@@ -179,13 +177,11 @@ def test_order_deletion_auth_user_with_shipping(auth_user_with_shipping, product
     assert OrderItem.objects.count() == 0
 
 @pytest.mark.django_db #OK
-def test_order_deletion_auth_user_without_shipping(auth_user_without_shipping, product, order):
+def test_order_deletion_auth_user_without_shipping(auth_user_without_shipping, product, order, order_item_1):
     client = Client()
     user, password = auth_user_without_shipping
     login = client.login(username=user.username, password=password)
     assert login is True
-
-    order_item = OrderItem.objects.create(order=order, product=product, quantity=3, price=125)
 
     assert user.username == 'randomuser12'
 
@@ -198,9 +194,7 @@ def test_order_deletion_auth_user_without_shipping(auth_user_without_shipping, p
     assert OrderItem.objects.count() == 0
 
 @pytest.mark.django_db #OK
-def test_order_deletion_guest_user(product,order):
-    order = order
-    order_item = OrderItem.objects.create(order=order, product=product, quantity=3, price=75)
+def test_order_deletion_guest_user(product,order, order_item_1):
 
     assert Order.objects.count() == 1
     assert OrderItem.objects.count() == 1

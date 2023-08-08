@@ -38,13 +38,22 @@ def category_deletion(category):
     assert not Category.objects.filter(slug=category.slug).exists()
 
 
-@pytest.mark.django_db #OK
-def test_add_product_to_existing_category(product, category):
-    product.category = category
+@pytest.mark.django_db
+def test_add_product_to_existing_category(category):
+    product = Product.objects.create(title='Havana pants', category=category, price=20.00)
     product.save()
-
     assert product in category.product.all()
 
+@pytest.mark.django_db
+def test_change_product_category(product, category):
+    initial_category = category
+    new_category = Category.objects.create(name='Pants', slug='pants')
+    assert initial_category != new_category
+
+    product.category = new_category
+    product.save()
+
+    assert product.category == new_category
 
 @pytest.mark.django_db #OK
 def test_delete_product_from_existing_category(product, category):
@@ -98,10 +107,12 @@ def test_non_existing_product_slug():
 
     assert response.status_code == 404
 
-@pytest.mark.django_db #OK
+@pytest.mark.django_db
 def test_product_creation():
-    product = Product.objects.create(title='popeye pants', slug='popeye pants', price=9.99, image='images/')
-    assert Product.objects.filter(slug='popeye pants').exists()
+    product = Product.objects.create(title='popeye pants', slug='popeye-pants', price=9.99, image='images/')
+
+    assert Product.objects.filter(slug='popeye-pants').exists()
+    assert product.price == 9.99
 
 @pytest.mark.django_db #OK
 def test_product_price_change(product):

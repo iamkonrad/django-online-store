@@ -49,8 +49,8 @@ def test_cart_delete_non_existent_product(product):
 @pytest.mark.django_db  #OK
 def test_cart_update(product):
     client = Client()
-    add_url = reverse('cart-add')                                                                                       #Adding product to the cart
-    client.post(add_url, {'action': 'post', 'product_id': product.id, 'product_quantity': 1})
+    add_url = reverse('cart-add')
+    client.post(add_url, {'action': 'post', 'product_id': product.id, 'product_quantity': 1})                           #Adding product to the cart
 
     update_url = reverse('cart-update')                                                                                 #Updating the cart
     response = client.post(update_url, {'action': 'post', 'product_id': product.id, 'product_quantity': 5})
