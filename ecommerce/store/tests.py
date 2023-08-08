@@ -1,5 +1,6 @@
 import pytest
 from decimal import Decimal
+from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import Client
 from django.urls import reverse
@@ -36,7 +37,6 @@ def category_deletion(category):
     assert Category.objects.filter(slug=category.slug).exists()
     category.delete()
     assert not Category.objects.filter(slug=category.slug).exists()
-
 
 @pytest.mark.django_db
 def test_add_product_to_existing_category(category):
@@ -114,6 +114,14 @@ def test_product_creation():
     assert Product.objects.filter(slug='popeye-pants').exists()
     assert product.price == 9.99
 
+@pytest.mark.django_db
+def test_delete_product_from_category(product, category):
+    assert product.category == category
+    product.category = None
+    product.save()
+
+    product.refresh_from_db()
+    assert product.category is None
 @pytest.mark.django_db #OK
 def test_product_price_change(product):
     new_price = Decimal('29.99')
@@ -146,16 +154,16 @@ def test_search_view_existing_product(product):
 @pytest.mark.django_db #OK
 def test_tag_unique_name():
     Tag.objects.create(tag_name='Best Sellers')
-    with pytest.raises(Exception):
+    with pytest.raises(IntegrityError):
         Tag.objects.create(tag_name='Best Sellers')
 @pytest.mark.django_db #OK
 def test_tag_unique_slug():
     Tag.objects.create(tag_name='Best Sellers', tag_slug='best-sellers')
-    with pytest.raises(Exception):
+    with pytest.raises(IntegrityError):                                                                                 #Instead of just Exception
         Tag.objects.create(tag_name='New Arrivals', tag_slug='best-sellers')
 
-@pytest.mark.django_db #OK                                                                                   #checking whether appropriate tag slug URL will be constructed
-def test_tag_absolute_url(tag):
+@pytest.mark.django_db #OK                                                                                              #checking whether appropriate
+def test_tag_absolute_url(tag):                                                                                         #tag slug URL will be constructed
     url = reverse('list-tag', args=[tag.tag_slug])
     assert url == f'/tag/{tag.tag_slug}/'
 

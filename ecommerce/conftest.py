@@ -38,6 +38,7 @@ def auth_user_with_shipping():
             address2='Apt 4B',
             city='Somethingtown',
             postal_code='12345',
+            state='Alaska',
         )
 
         yield user, shipping_address, password
@@ -74,6 +75,17 @@ def order(auth_user_with_shipping):
         full_name="Simon Adebisi",
         email="john@something.com",
         shipping_address=shipping_address.address1,
+        amount_paid=875,
+        user=user,
+    )
+    return order_obj
+
+@pytest.fixture
+def order_without_shipping(auth_user_without_shipping):
+    user, password = auth_user_without_shipping
+    order_obj = Order.objects.create(
+        full_name="Jack Sparrow",
+        email="jacksparrow@something.com",
         amount_paid=875,
         user=user,
     )
