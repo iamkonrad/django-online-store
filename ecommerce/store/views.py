@@ -17,7 +17,7 @@ def store(request):
 
 def categories(request):
 
-    all_categories=Category.objects.all()                                                                               #select all categories(shoes and shirts)
+    all_categories=Category.objects.all()                                                                               #select all categories
 
     return {'all_categories': all_categories}
 
@@ -57,8 +57,13 @@ def search(request):
 
 
 def list_tag(request, tag_slug=None):
-    tag = get_object_or_404(Tag, tag_slug=tag_slug)
-    products = tag.product_tags.all()
+    products = Product.objects.all().order_by('pk')                                                                     # Order by primary key
+    tag = None
+
+    if tag_slug:                                                                                                        # if there is a tag, try to retrieve it
+        tag = get_object_or_404(Tag, tag_slug=tag_slug)
+        products = products.filter(tags__tag_slug=tag_slug)
+
     all_categories = Category.objects.all()
     all_tags = Tag.objects.all()
 

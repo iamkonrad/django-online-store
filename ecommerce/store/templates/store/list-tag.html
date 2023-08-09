@@ -6,13 +6,21 @@
 
 <main>
 
-  <div class="album py-5 bg-light">
+  <div class="album py-1 pg-3 bg-light">
     <div class="container">
-
+        <br>
       <div class="pb-3 h5"> {{ tag.tag_name|capfirst }} </div>
 
       <hr>
 
+        <div class="row">
+                <h5>Tags:</h5>
+                <ul class="list-inline">
+                    {% for tag in all_tags %}
+                        <li class="list-inline-item"><a class="text-black text-decoration-none" href="{% url 'list-tag' tag.tag_slug %}">{{ tag.tag_name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
       <br>
 
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
@@ -38,6 +46,7 @@
 
       </div>
     </div>
+      <br> <br>
   </div>
 
 </main>
