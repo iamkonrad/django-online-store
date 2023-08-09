@@ -23,6 +23,7 @@ class Category(models.Model):
 
 class Product(models.Model):
 
+    #FK
     category = models.ForeignKey(Category, related_name='product',on_delete=models.CASCADE, null=True)                  #linking category and product through a fk, will add category to products
                                                                                                                         #deleting a category deletes all the associated products
     title=models.CharField(max_length=250)
@@ -37,7 +38,10 @@ class Product(models.Model):
 
     image = models.ImageField(upload_to='images/')                                                                      #upon uploading an image will create an image subfolder in media (pillow rqd)
 
-    tags = models.ManyToManyField('Tag', related_name='product_tags', blank=True)                                       #MANY TO MANY RELATIONSHIP with tags,acting as an intermediary
+    # MANY TO MANY RELATIONSHIP with tags,acting as an intermediary, each product can have many tags, and each tag
+    #can be associated with many products
+
+    tags = models.ManyToManyField('Tag', related_name='product_tags', blank=True)
 
 
     class Meta:

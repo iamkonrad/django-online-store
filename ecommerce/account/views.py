@@ -141,8 +141,8 @@ def user_logout(request):
 
             else:
 
-                del request.session[key]
-
+                del request.session[key]                                                                                # clearing all the keys from the session except
+                                                                                                                        # for the  session key
 
     except KeyError:
 
