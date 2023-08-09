@@ -41,6 +41,16 @@ def search(request):
     query = request.GET.get('search_query')
     if query:
         results = Product.objects.filter(title__icontains=query)
+        if not results:
+            if query.endswith('s'):
+                results = Product.objects.filter(title__icontains=query[:-1])
+            elif query.endswith('es'):
+                results = Product.objects.filter(title__icontains=query[:-2])
+            elif query.endswith('ies'):
+                singular_query = query[:-3] + 'y'                                                                       #berry, berries
+                results = Product.objects.filter(title__icontains=singular_query)
+            else:
+                results = Product.objects.filter(title__icontains=query + 's')
     else:
         results = Product.objects.none()
     return render(request, 'store/search_results.html', {'results': results, 'query': query})

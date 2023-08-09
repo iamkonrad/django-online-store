@@ -6,9 +6,12 @@
 <div class="album py-1 bg-light">
 
     <div class="container">
+        <br>
+        <br>
 
-        <h3>Search Results for: "{{ query }}"</h3>
-    <hr>
+        <div class="pb-3 h5">Search Results for: "{{ query }}"</div>
+        <hr>
+        <br>
 
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
             {% if results %}
@@ -30,12 +33,15 @@
             {% else %}
                 <div class="col">
                     <p>No results found.</p>
+                <br><br>
                 </div>
             {% endif %}
         </div>
 
     </div>
-<br>
+<br><br>
 </div>
+
+
 
 {% endblock %}
