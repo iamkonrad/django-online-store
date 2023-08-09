@@ -11,12 +11,11 @@ from django.http import JsonResponse
 
 def cart_summary(request):
 
-    cart = Cart(request)
+    cart = Cart(request)                                                                                                #creating an instance of cart object
+    return render(request,'cart/cart-summary.html',{'cart':cart})                                                       #Responsible for viewing the cart
 
-    return render(request,'cart/cart-summary.html',{'cart':cart})
 
-
-def cart_add(request):                                                                                    #grabbing AJAX functionality from product-info
+def cart_add(request):                                                                                    #grabbing AJAX functionality from product-info, product.id and quality
 
     cart=Cart(request)                                                                                    #using session data
 

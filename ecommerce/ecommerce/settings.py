@@ -80,7 +80,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'store.views.categories', #makes data available on any template
+                'store.views.categories',                                                                                #makes data available on any template
                 'cart.context_processors.cart',
             ],
         },
@@ -154,7 +154,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
 
 
-#For securty reasons below fields should be filled as and if needed
+                    #For securty reasons below fields should be filled as and if needed
 
 
 #EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
@@ -162,7 +162,9 @@ EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
 #EMAIL_PORT='587'
 #EMAIL_USE_TLS='True'
 
-#EMAIL_HOST_USER='' #Your gmail address
-#EMAIL_HOST_PASSWORD=''  #Your app password
+#EMAIL_HOST_USER=''         #Your gmail address
+#EMAIL_HOST_PASSWORD=''     #Your app password
 
-#Possible space for adding PayPal integration if needed
+                    #Possible space below for adding PayPal integration if needed
+
+

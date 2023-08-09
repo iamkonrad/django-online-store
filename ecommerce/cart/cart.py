@@ -2,7 +2,7 @@
 from decimal import Decimal
 
 from store.models import Product
-class Cart():
+class Cart():                                                                               #initialized from the session data handled by Ajax
     def __init__(self,request):                                                              #accessing the attributes
 
         self.session = request.session                                                       #creating new session for new user, returning one utilizes existing session
@@ -13,7 +13,7 @@ class Cart():
 
             cart=self.session['session_key'] = {}
 
-        self.cart=cart                                                                      # new user no products in cart
+        self.cart=cart                                                                      # new user, no products in cart
 
 
 
