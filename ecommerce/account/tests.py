@@ -25,7 +25,7 @@ def test_new_user_registration():
     assert User.objects.filter(email='someemail@email.com').exists()
 
 @pytest.mark.django_db #OK
-def test_user_without_shipping_login(active_user_without_shipping):
+def test_active_user_without_shipping_login(active_user_without_shipping):
     client = Client()
     user,password = active_user_without_shipping
     url = reverse('my-login')
@@ -35,7 +35,7 @@ def test_user_without_shipping_login(active_user_without_shipping):
     assert auth.get_user(client).is_authenticated
 
 @pytest.mark.django_db #OK
-def test_user_with_shipping_login(active_user_with_shipping):
+def test_active_user_with_shipping_login(active_user_with_shipping):
     client = Client()
     user, shipping_address, password = active_user_with_shipping
     url = reverse('my-login')
@@ -45,17 +45,6 @@ def test_user_with_shipping_login(active_user_with_shipping):
     assert response.url == reverse('dashboard')
     assert auth.get_user(client).is_authenticated
 
-
-@pytest.mark.django_db #OK
-def test_unauth_user_login(inactive_user):
-    client = Client()
-    user, password = inactive_user
-    url = reverse('my-login')
-    response = client.post(url, {'username': user.username})
-
-    assert response.status_code == 200                                                                                  #the request was processed successfully, but
-    assert not auth.get_user(client).is_authenticated                                                                   #the user is not authenticated, so he won't be
-                                                                                                                        #allowed to login
 @pytest.mark.django_db #OK
 def test_inactive_user_login(inactive_user):
     client = Client()
@@ -64,12 +53,12 @@ def test_inactive_user_login(inactive_user):
     response = client.post(url, {'username': user.username, 'password': password})
 
     assert response.status_code != 302                                                                                  #asserts status code is different from 302, that is
-    assert not auth.get_user(client).is_authenticated                                                                   #a successful login
-
+    assert not auth.get_user(client).is_authenticated                                                                   #a successful login (the status code is 200, request
+                                                                                                                        #was processed, but user not logged in
 @pytest.mark.django_db #OK
-def test_user_without_shipping_logout(active_user_without_shipping):
+def test_active_user_without_shipping_logout(active_user_without_shipping):
     client=Client()
-    user, password = active_user_without_shipping                                                                         # Unpack the user from the tuple
+    user, password = active_user_without_shipping                                                                       # Unpack the user from the tuple
     client.force_login(user)                                                                                            # Pass the user object
     url = reverse('user-logout')
     response = client.get(url)
@@ -78,7 +67,7 @@ def test_user_without_shipping_logout(active_user_without_shipping):
     assert not auth.get_user(client).is_authenticated
 
 @pytest.mark.django_db #OK
-def test_user_with_shipping_logout(active_user_with_shipping):
+def test_active_user_with_shipping_logout(active_user_with_shipping):
     client=Client()
     user, shipping_address,password = active_user_with_shipping
     client.force_login(user)
@@ -89,7 +78,7 @@ def test_user_with_shipping_logout(active_user_with_shipping):
     assert not auth.get_user(client).is_authenticated
 
 @pytest.mark.django_db #OK
-def test_delete_account_user_with_shipping(active_user_with_shipping):
+def test_delete_account_active_user_with_shipping(active_user_with_shipping):
     client = Client()
     user, shipping_address, password = active_user_with_shipping
     client.force_login(user)
@@ -103,7 +92,7 @@ def test_delete_account_user_with_shipping(active_user_with_shipping):
     with pytest.raises(User.DoesNotExist):
         user.refresh_from_db()
 @pytest.mark.django_db  # OK
-def test_delete_account_user_without_shipping(active_user_without_shipping):
+def test_delete_account_active_user_without_shipping(active_user_without_shipping):
     client = Client()
     user, password = active_user_without_shipping
     client.force_login(user)
@@ -120,7 +109,7 @@ def test_delete_account_user_without_shipping(active_user_without_shipping):
 
 #DASHBOARD
 @pytest.mark.django_db
-def test_access_the_dashboard_user_with_shipping(active_user_with_shipping):
+def test_access_the_dashboard_active_user_with_shipping(active_user_with_shipping):
     client = Client()
     user, shipping_address, password = active_user_with_shipping
 
@@ -132,7 +121,7 @@ def test_access_the_dashboard_user_with_shipping(active_user_with_shipping):
     assert response.status_code == 200
 
 @pytest.mark.django_db
-def test_access_the_dashboard_user_without_shipping(active_user_without_shipping):
+def test_access_the_dashboard_active_user_without_shipping(active_user_without_shipping):
     client = Client()
     user, password = active_user_without_shipping
 
@@ -153,7 +142,7 @@ def test_access_the_dashboard_guest_user():
     assert response.url.startswith(reverse('my-login'))                                                                 #because of a login decorator, next startswith
 
 @pytest.mark.django_db
-def test_access_the_dashboard_unauth_user(inactive_user):
+def test_access_the_dashboard_inactive_user(inactive_user):
     client = Client()
     user,password = inactive_user
     client.force_login(user)
@@ -164,7 +153,7 @@ def test_access_the_dashboard_unauth_user(inactive_user):
     assert 'my-login' in response.url                                                                                   #gets redirected to login, can't access the dashboard
 
 @pytest.mark.django_db #OK
-def test_profile_management_user_with_shipping(active_user_with_shipping):
+def test_profile_management_active_user_with_shipping(active_user_with_shipping):
     client=Client()
     user, shipping_address, password = active_user_with_shipping
     client.force_login(user)
@@ -178,7 +167,7 @@ def test_profile_management_user_with_shipping(active_user_with_shipping):
     assert user.email == user.email
 
 @pytest.mark.django_db #OK
-def test_profile_management_user_without_shipping(active_user_without_shipping):
+def test_profile_management_active_user_without_shipping(active_user_without_shipping):
     client=Client()
     user, password=active_user_without_shipping
     client.force_login(user)
@@ -201,7 +190,7 @@ def test_profile_management_guest_user():
     assert response.url.startswith(reverse('my-login'))                                                                 #Startswith because of log-in decorator
 
 @pytest.mark.django_db
-def test_manage_shipping_user_with_shipping(active_user_with_shipping):
+def test_manage_shipping_active_user_with_shipping(active_user_with_shipping):
     client = Client()
     user, shipping_address, password = active_user_with_shipping
     client.force_login(user)
@@ -226,7 +215,7 @@ def test_manage_shipping_user_with_shipping(active_user_with_shipping):
     assert response_post.url == dashboard_url
 
 @pytest.mark.django_db
-def test_profile_management_user_with_shipping(active_user_with_shipping):
+def test_profile_management_active_user_with_shipping(active_user_with_shipping):
     client = Client()
     user, shipping_address, password = active_user_with_shipping
 
@@ -238,7 +227,7 @@ def test_profile_management_user_with_shipping(active_user_with_shipping):
     assert response.status_code == 200                                                                                  #the user can access the dashboard
 
 @pytest.mark.django_db
-def test_manage_shipping_user_without_shipping(active_user_without_shipping):
+def test_manage_shipping_active_user_without_shipping(active_user_without_shipping):
     client = Client()
     user, password = active_user_without_shipping
     client.force_login(user)
@@ -270,7 +259,7 @@ def test_manage_shipping_user_without_shipping(active_user_without_shipping):
     assert shipping_address.state == 'NY'
 
 @pytest.mark.django_db
-def test_track_orders_user_with_shipping(active_user_with_shipping, order):
+def test_track_orders_active_user_with_shipping(active_user_with_shipping, order):
     client = Client()
     user, shipping_address, password = active_user_with_shipping
     client.force_login(user)
@@ -281,7 +270,7 @@ def test_track_orders_user_with_shipping(active_user_with_shipping, order):
     assert order.user == user
 
 @pytest.mark.django_db #OK
-def test_track_orders_user_without_shipping(order_without_shipping):
+def test_track_orders_active_user_without_shipping(order_without_shipping):
     client = Client()
     user = order_without_shipping.user
     client.force_login(user)

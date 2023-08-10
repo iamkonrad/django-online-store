@@ -1,4 +1,3 @@
-
 # - Import password reset token generator
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator

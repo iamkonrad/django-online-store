@@ -38,7 +38,7 @@ class Product(models.Model):
 
     image = models.ImageField(upload_to='images/')                                                                      #upon uploading an image will create an image subfolder in media (pillow rqd)
 
-    # MANY TO MANY RELATIONSHIP with tags,acting as an intermediary, each product can have many tags, and each tag
+    # MANY-TO-MANY RELATIONSHIP with tags,acting as an intermediary, each product can have many tags, and each tag
     #can be associated with many products
 
     tags = models.ManyToManyField('Tag', related_name='product_tags', blank=True)
@@ -53,7 +53,6 @@ class Product(models.Model):
 
 #dynamic links for products
     def get_absolute_url(self):
-
         return reverse('product-info',args=[self.slug])
 
 class Tag(models.Model):                                                                                                # Many to many relationship with products class

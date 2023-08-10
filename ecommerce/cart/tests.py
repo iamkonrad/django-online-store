@@ -59,8 +59,6 @@ def test_cart_update(product):
     assert response.json()['qty'] == 5                                                                                  #Updated quantity is 5=it works
 
 
-
-
 @pytest.mark.django_db #OK
 def test_cart_contents_after_login(product, active_user_with_shipping):
     client = Client()

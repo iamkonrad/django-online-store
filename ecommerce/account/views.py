@@ -20,7 +20,7 @@ from django.contrib.auth import authenticate
 
 from django.contrib.auth.decorators import login_required
 
-from django.contrib import messages
+from django.contrib import messages                                                                                     #to show popup notifications
 
 def register(request):                                                                                                  #registration process starts HERE, once done passed
                                                                                                                         #to email-verification.html

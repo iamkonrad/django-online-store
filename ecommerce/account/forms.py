@@ -19,7 +19,8 @@ class CreateUserForm(UserCreationForm):
 
         self.fields['email'].required=True                                                                              #making email a required field in the forms
 
-#Email validation
+
+#Email validation (has to be unique and can't be too long)
     def clean_email(self):
 
         email=self.cleaned_data.get("email")
